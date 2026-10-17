@@ -14,6 +14,7 @@ import {
   Zap, 
   CheckCircle2 
 } from 'lucide-react';
+import { trackWhatsAppClick, trackPhoneCall } from '@/lib/analytics';
 
 export default function Footer() {
   const { t, lang } = useLanguage();
@@ -56,7 +57,14 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-lime shrink-0" />
-                <span dir="ltr">+968 9400 9501 / +968 9600 9404</span>
+                <a
+                  href="tel:+96894009501"
+                  onClick={() => trackPhoneCall('footer')}
+                  className="hover:text-white transition-colors"
+                  dir="ltr"
+                >
+                  +968 9400 9501 / +968 9600 9404
+                </a>
               </div>
             </div>
 
@@ -76,6 +84,7 @@ export default function Footer() {
                 href="https://wa.me/96894009501"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackWhatsAppClick('footer')}
                 className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-lime/20 text-lime text-xs font-bold hover:bg-lime hover:text-white transition-colors"
               >
                 <MessageCircle className="w-4 h-4" />
@@ -186,7 +195,17 @@ export default function Footer() {
         {/* Bottom Bar: Copyright & Compliance */}
         <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-400 text-center md:text-start">
           <p>{t.footerVatNote}</p>
-          <p>{t.footerCopyright}</p>
+          <div className="flex items-center gap-3.5 flex-wrap justify-center">
+            <Link href="/privacy" className="hover:text-cyan transition-colors">
+              {lang === 'ar' ? 'سياسة الخصوصية' : 'Privacy Policy'}
+            </Link>
+            <span className="text-white/20">·</span>
+            <Link href="/terms" className="hover:text-cyan transition-colors">
+              {lang === 'ar' ? 'الشروط والأحكام' : 'Terms & Conditions'}
+            </Link>
+            <span className="text-white/20">·</span>
+            <span>{t.footerCopyright}</span>
+          </div>
         </div>
       </div>
     </footer>

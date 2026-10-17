@@ -3,10 +3,10 @@ export type Language = 'en' | 'ar';
 export const TRANSLATIONS = {
   en: {
     // Top banner
-    topDelivery: "⚡ Same-Day Delivery across Muscat (Orders before 3 PM)",
-    topCod: "📦 Cash on Delivery (COD) All Over Oman",
-    topShowroom: "📍 Showroom: Shop 10, Ghala Heights, Muscat",
-    topHours: "Sat–Thu: 9:00 AM – 10:00 PM | Fri: 4:30 PM – 10:00 PM",
+    topDelivery: "Same-Day Delivery across Muscat (Orders before 3 PM)",
+    topCod: "Cash on Delivery (COD) All Over Oman",
+    topShowroom: "Showroom: Shop 10, Ghala Heights, Muscat",
+    topHours: "Sat-Thu: 9:00 AM - 10:00 PM | Fri: 4:30 PM - 10:00 PM",
     topWhatsApp: "WhatsApp: +968 94009501",
 
     // Navbar
@@ -31,7 +31,7 @@ export const TRANSLATIONS = {
     heroTagWarranty: "6-Month Shop Warranty + 7-Day Exchange",
     heroTagDelivery: "Same-Day Delivery in Muscat (COD)",
     heroSpecCpu: "Intel Core i5 / i7 & Apple Silicon M-Series",
-    heroSpecRam: "16GB – 32GB High-Speed RAM",
+    heroSpecRam: "16GB - 32GB High-Speed RAM",
     heroSpecSsd: "Fast PCIe NVMe Solid State Drives",
     heroSpecDisplay: "FHD Anti-Glare & Liquid Retina Displays",
     heroFloatCpuTitle: "13th Gen & M-Series",
@@ -120,8 +120,8 @@ export const TRANSLATIONS = {
     showroomAddress: "Shop No. 10, Ghala Heights, Wilayat Bausher, Muscat, Sultanate of Oman",
     showroomDirections: "Easily accessible from Sultan Qaboos Highway and Muscat Expressway. Free parking right in front of the showroom.",
     showroomHoursTitle: "Opening Hours:",
-    showroomHoursWeek: "Saturday – Thursday: 9:00 AM – 1:30 PM & 4:30 PM – 10:00 PM",
-    showroomHoursFri: "Friday: 4:30 PM – 10:00 PM",
+    showroomHoursWeek: "Saturday - Thursday: 9:00 AM - 1:30 PM & 4:30 PM - 10:00 PM",
+    showroomHoursFri: "Friday: 4:30 PM - 10:00 PM",
     showroomPhoneTitle: "Direct Inquiries:",
     showroomPhone: "+968 9400 9501 / +968 9600 9404",
     btnGoogleMaps: "Open in Google Maps",
@@ -190,10 +190,10 @@ export const TRANSLATIONS = {
 
   ar: {
     // Top banner
-    topDelivery: "⚡ توصيل في نفس اليوم داخل مسقط (للطلبات قبل ٣:٠٠ عصراً)",
-    topCod: "📦 الدفع نقداً عند الاستلام لجميع محافظات سلطنة عُمان",
-    topShowroom: "📍 المعرض: محل رقم ١٠، غلا هايتس، مسقط",
-    topHours: "السبت–الخميس: ٩:٠٠ ص – ١٠:٠٠ م | الجمعة: ٤:٣٠ م – ١٠:٠٠ م",
+    topDelivery: "توصيل في نفس اليوم داخل مسقط (للطلبات قبل ٣:٠٠ عصراً)",
+    topCod: "الدفع نقداً عند الاستلام لجميع محافظات سلطنة عُمان",
+    topShowroom: "المعرض: محل رقم ١٠، غلا هايتس، مسقط",
+    topHours: "السبت-الخميس: ٩:٠٠ ص - ١٠:٠٠ م | الجمعة: ٤:٣٠ م - ١٠:٠٠ م",
     topWhatsApp: "واتساب: ٩٤٠٠٩٥٠١ ٩٦٨+",
 
     // Navbar
@@ -307,8 +307,8 @@ export const TRANSLATIONS = {
     showroomAddress: "محل رقم ١٠، غلا هايتس، ولاية بوشر، محافظة مسقط، سلطنة عُمان",
     showroomDirections: "موقع استراتيجي سهل الوصول من طريق السلطان قابوس وطريق مسقط السريع مع مواقف مجانية واسعة.",
     showroomHoursTitle: "ساعات العمل:",
-    showroomHoursWeek: "السبت – الخميس: ٩:٠٠ ص – ١:٣٠ ظهراً ومن ٤:٣٠ م – ١٠:٠٠ م",
-    showroomHoursFri: "الجمعة: ٤:٣٠ عصراً – ١٠:٠٠ مساءً",
+    showroomHoursWeek: "السبت - الخميس: ٩:٠٠ ص - ١:٣٠ ظهراً ومن ٤:٣٠ م - ١٠:٠٠ م",
+    showroomHoursFri: "الجمعة: ٤:٣٠ عصراً - ١٠:٠٠ مساءً",
     showroomPhoneTitle: "التواصل والاستفسار:",
     showroomPhone: "٩٤٠٠٩٥٠١ ٩٦٨+ / ٩٦٠٠٩٤٠٤ ٩٦٨+",
     btnGoogleMaps: "الموقع على خرائط جوجل",

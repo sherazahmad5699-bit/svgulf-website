@@ -3,7 +3,10 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/components/LanguageContext';
-import { Product } from '@/data/products';
+import { Product, PRODUCTS } from '@/data/products';
+import Breadcrumb from '@/components/Breadcrumb';
+import ProductCard from '@/components/ProductCard';
+import { trackWhatsAppClick } from '@/lib/analytics';
 import { 
   ChevronRight, 
   BatteryCharging, 
@@ -30,6 +33,9 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
   const isAccessory = product.category === 'monitor' || product.category === 'accessory';
 
+  // Related products for internal cross-linking
+  const relatedProducts = PRODUCTS.filter(p => p.sku !== product.sku).slice(0, 4);
+
   // Configurator Upgrade State
   const initialRamLabel = product.upgradeOptions?.ramOptions?.[0]?.label || 'Standard Included';
   const initialRamLabelAr = product.upgradeOptions?.ramOptions?.[0]?.labelAr || 'الأساسي المعتمد';
@@ -52,22 +58,22 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
       id: 'muscat-cod',
       value: 'Muscat Same-Day Delivery (Cash on Delivery)',
       valueAr: 'توصيل في نفس اليوم داخل مسقط (كاش عند الاستلام)',
-      label: '⚡ Same-Day Delivery across Muscat (Cash on Delivery)',
-      labelAr: '⚡ توصيل في نفس اليوم داخل مسقط (الدفع عند الاستلام)'
+      label: 'Same-Day Delivery across Muscat (Cash on Delivery)',
+      labelAr: 'توصيل في نفس اليوم داخل مسقط (الدفع عند الاستلام)'
     },
     {
       id: 'governorates-cod',
       value: 'Other Governorates (Salalah, Sohar, Nizwa - COD)',
       valueAr: 'شحن لباقي المحافظات (صلالة، صحار، نزوى - دفع عند الاستلام)',
-      label: '📦 Delivery to Other Governorates (COD via Express Courier)',
-      labelAr: '📦 شحن للمحافظات: صلالة، صحار، نزوى (دفع عند الاستلام)'
+      label: 'Delivery to Other Governorates (COD via Express Courier)',
+      labelAr: 'شحن للمحافظات: صلالة، صحار، نزوى (دفع عند الاستلام)'
     },
     {
       id: 'showroom-pickup',
       value: 'Showroom Pickup at Shop 10 Ghala Heights',
       valueAr: 'استلام شخصي وتجربة من المعرض (محل رقم 10، غلا هايتس)',
-      label: '🏪 In-Person Pickup at Shop 10, Ghala Heights Showroom',
-      labelAr: '🏪 استلام شخصي وتجربة من المعرض (محل 10، غلا هايتس)'
+      label: 'In-Person Pickup at Shop 10, Ghala Heights Showroom',
+      labelAr: 'استلام شخصي وتجربة من المعرض (محل 10، غلا هايتس)'
     }
   ];
 
@@ -123,13 +129,12 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
       <div className="max-w-7xl mx-auto">
         
         {/* Breadcrumb Header */}
-        <div className="mb-6 flex items-center gap-2 text-xs font-semibold text-ink-faint">
-          <Link href="/" className="hover:text-navy transition-colors">{t.navHome}</Link>
-          <ChevronRight className={`w-3.5 h-3.5 ${dir === 'rtl' ? 'rotate-180' : ''}`} />
-          <Link href="/inventory" className="hover:text-navy transition-colors">{t.navInventory}</Link>
-          <ChevronRight className={`w-3.5 h-3.5 ${dir === 'rtl' ? 'rotate-180' : ''}`} />
-          <span className="text-navy font-bold">{product.sku}</span>
-        </div>
+        <Breadcrumb
+          items={[
+            { label: 'Inventory', labelAr: 'كتالوج الأجهزة', href: '/inventory' },
+            { label: product.name, labelAr: product.nameAr },
+          ]}
+        />
 
         {/* Main Product Showcase Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start mb-14">
@@ -149,10 +154,10 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
               {/* Status Header */}
               <div className="relative z-10 flex items-center justify-between mb-8">
-                <span className="text-xs font-mono font-bold text-cyan bg-cyan/15 px-3 py-1 rounded-full border border-cyan/30 uppercase">
+                <span className="text-xs font-mono font-bold text-cyan bg-cyan/15 px-3 py-1.5 rounded-xl border border-cyan/30 uppercase">
                   {product.brandLabel} · {lang === 'ar' ? product.categoryLabelAr : product.categoryLabel}
                 </span>
-                <span className="text-xs font-bold text-lime flex items-center gap-1.5 bg-lime/10 px-2.5 py-1 rounded-full border border-lime/30">
+                <span className="text-xs font-bold text-lime flex items-center gap-1.5 bg-lime/10 px-3 py-1.5 rounded-xl border border-lime/30">
                   <span className="w-2 h-2 rounded-full bg-lime animate-ping" />
                   {lang === 'ar' ? 'متوفر بمخزن مسقط' : 'In Stock Muscat'}
                 </span>
@@ -418,6 +423,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                     href={waOrderLink}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={() => trackWhatsAppClick('product_detail_configurator', product.sku, product.name)}
                     className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-lime hover:bg-lime-hover text-white font-extrabold text-base shadow-glow-lime transition-all transform hover:-translate-y-0.5 active:translate-y-0"
                   >
                     <MessageCircle className="w-5 h-5 fill-current" />
@@ -467,6 +473,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                     href={waOrderLink}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={() => trackWhatsAppClick('product_detail_direct', product.sku, product.name)}
                     className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-lime hover:bg-lime-hover text-white font-extrabold text-base shadow-glow-lime transition-all transform hover:-translate-y-0.5 active:translate-y-0"
                   >
                     <MessageCircle className="w-5 h-5 fill-current" />
@@ -478,6 +485,34 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
           </div>
 
+        </div>
+
+        {/* Related Hardware in Muscat Showroom */}
+        <div className="mt-16 pt-12 border-t border-slate-200">
+          <div className="flex items-center justify-between gap-4 mb-8">
+            <div>
+              <h3 className="text-2xl font-black text-navy">
+                {lang === 'ar' ? 'أجهزة أعمال مشابهة متوفرة في المعرض' : 'Alternative Business Laptops in Stock'}
+              </h3>
+              <p className="text-xs text-ink-muted mt-1">
+                {lang === 'ar'
+                  ? 'أجهزة مفحوصة ومضمونة لمدة 6 أشهر متاحة للتسليم الفوري في مسقط وسلطنة عُمان'
+                  : 'Grade A++ verified laptops with 6-month shop warranty ready for same-day dispatch.'}
+              </p>
+            </div>
+            <Link
+              href="/inventory"
+              className="text-xs font-bold text-cyan hover:underline flex items-center gap-1"
+            >
+              <span>{lang === 'ar' ? 'عرض الكتالوج كاملاً' : 'View Full Catalog'}</span>
+              <ChevronRight className={`w-3.5 h-3.5 ${dir === 'rtl' ? 'rotate-180' : ''}`} />
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {relatedProducts.map((p) => (
+              <ProductCard key={p.sku} product={p} />
+            ))}
+          </div>
         </div>
 
       </div>

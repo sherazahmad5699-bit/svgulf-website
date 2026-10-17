@@ -13,8 +13,10 @@ import {
   Sparkles,
   Cpu,
   Layers,
-  HardDrive
+  HardDrive,
+  Monitor
 } from 'lucide-react';
+import { trackWhatsAppClick } from '@/lib/analytics';
 
 interface ProductCardProps {
   product: Product;
@@ -122,9 +124,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             <span className="font-semibold text-ink">{product.ssd}</span>
           </div>
           <div className="flex items-start gap-2">
-            <span className="w-4 h-4 rounded-full bg-slate-100 text-slate-500 font-mono text-[10px] flex items-center justify-center shrink-0 mt-0.5">
-              🖥️
-            </span>
+            <Monitor className="w-4 h-4 text-cyan shrink-0 mt-0.5" />
             <span className="line-clamp-1">{product.display}</span>
           </div>
         </div>
@@ -178,6 +178,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             href={waLink}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackWhatsAppClick('product_card', product.sku, product.name)}
             className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-lime hover:bg-lime-hover text-white font-extrabold text-xs shadow-sm hover:shadow-glow-lime transition-all transform hover:-translate-y-0.5"
           >
             <MessageCircle className="w-3.5 h-3.5 fill-current" />

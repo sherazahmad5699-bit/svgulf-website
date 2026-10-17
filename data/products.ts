@@ -684,8 +684,8 @@ export const CONDITIONS = [
 export const PRICE_RANGES = [
   { id: 'all', label: 'All Prices', labelAr: 'كافة الأسعار', min: 0, max: 9999 },
   { id: 'under100', label: 'Under OMR 100', labelAr: 'أقل من 100 ر.ع.', min: 0, max: 99.999 },
-  { id: '100-180', label: 'OMR 100 – 180 (Best Sellers)', labelAr: '100 – 180 ر.ع. (الأكثر طلباً)', min: 100, max: 180 },
-  { id: '180-350', label: 'OMR 180 – 350 (Mid to Pro)', labelAr: '180 – 350 ر.ع. (المستوى المتقدم)', min: 180.001, max: 350 },
+  { id: '100-180', label: 'OMR 100 - 180 (Best Sellers)', labelAr: '100 - 180 ر.ع. (الأكثر طلباً)', min: 100, max: 180 },
+  { id: '180-350', label: 'OMR 180 - 350 (Mid to Pro)', labelAr: '180 - 350 ر.ع. (المستوى المتقدم)', min: 180.001, max: 350 },
   { id: 'above350', label: 'Above OMR 350 (New & Apple)', labelAr: 'أكثر من 350 ر.ع. (الجديد وماك)', min: 350.001, max: 9999 },
 ];
 

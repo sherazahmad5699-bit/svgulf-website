@@ -1,0 +1,21 @@
+{
+  "name": "Smart Vision Gulf (svGulf)",
+  "short_name": "svGulf",
+  "description": "Certified Business Laptops & IT Solutions in Muscat, Oman",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000F3D",
+  "theme_color": "#001C71",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

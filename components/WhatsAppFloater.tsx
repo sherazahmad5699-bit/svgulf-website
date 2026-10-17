@@ -3,6 +3,7 @@
 import React from 'react';
 import { useLanguage } from './LanguageContext';
 import { MessageCircle, Phone } from 'lucide-react';
+import { trackWhatsAppClick, trackPhoneCall } from '@/lib/analytics';
 
 export default function WhatsAppFloater() {
   const { t, dir } = useLanguage();
@@ -22,7 +23,8 @@ export default function WhatsAppFloater() {
           href={waUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="group flex items-center gap-3 px-4 py-3 rounded-full bg-lime text-white font-extrabold text-sm shadow-xl shadow-lime/30 hover:bg-lime-hover hover:scale-105 transition-all duration-200"
+          onClick={() => trackWhatsAppClick('floating_button')}
+          className="group flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-lime text-white font-extrabold text-sm shadow-xl shadow-lime/30 hover:bg-lime-hover hover:scale-105 transition-all duration-200"
           aria-label="Direct WhatsApp Chat"
         >
           <div className="relative">
@@ -42,6 +44,7 @@ export default function WhatsAppFloater() {
             href={waUrl}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackWhatsAppClick('mobile_sticky_bar')}
             className="col-span-8 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-lime active:bg-lime-hover text-white font-extrabold text-sm shadow-md"
           >
             <MessageCircle className="w-5 h-5 fill-current" />
@@ -51,6 +54,7 @@ export default function WhatsAppFloater() {
           {/* Quick Call Button */}
           <a
             href={callUrl}
+            onClick={() => trackPhoneCall('mobile_sticky_bar')}
             className="col-span-4 flex items-center justify-center gap-1.5 py-3 px-3 rounded-xl bg-navy active:bg-navy-light text-white font-bold text-xs shadow-md"
           >
             <Phone className="w-4 h-4 fill-current text-cyan-light" />

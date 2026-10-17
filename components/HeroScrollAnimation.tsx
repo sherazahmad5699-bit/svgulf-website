@@ -18,6 +18,7 @@ import {
   HardDrive,
   Laptop
 } from 'lucide-react';
+import { trackWhatsAppClick } from '@/lib/analytics';
 
 export default function HeroScrollAnimation() {
   const { t, lang, dir } = useLanguage();
@@ -125,7 +126,7 @@ export default function HeroScrollAnimation() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-cyan/10 border border-cyan/30 text-cyan-light text-xs sm:text-sm font-bold tracking-wide uppercase mb-6"
+              className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-xl bg-cyan/10 border border-cyan/30 text-cyan-light text-xs sm:text-sm font-bold tracking-wide uppercase mb-6"
             >
               <span className="w-2 h-2 rounded-full bg-lime animate-ping" />
               <span className="w-2 h-2 rounded-full bg-lime -ml-4" />
@@ -174,6 +175,7 @@ export default function HeroScrollAnimation() {
                 href="https://wa.me/96894009501?text=Hello%20Smart%20Vision%20Gulf,%20I%20want%20to%20visit%20your%20Ghala%20Heights%20showroom"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackWhatsAppClick('hero_showroom_cta')}
                 className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2.5 px-7 py-4 rounded-2xl bg-lime hover:bg-lime-hover text-white font-extrabold text-base shadow-glow-lime transition-all transform hover:-translate-y-0.5 active:translate-y-0"
               >
                 <MessageCircle className="w-5 h-5 fill-current" />
