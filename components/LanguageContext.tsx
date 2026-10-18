@@ -18,17 +18,25 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Check saved preference
-    const saved = localStorage.getItem('svgulf_lang') as Language;
-    if (saved === 'en' || saved === 'ar') {
-      setLangState(saved);
-      document.documentElement.lang = saved;
-      document.documentElement.dir = saved === 'ar' ? 'rtl' : 'ltr';
+    try {
+      const saved = localStorage.getItem('svgulf_lang') as Language;
+      if (saved === 'en' || saved === 'ar') {
+        setLangState(saved);
+        document.documentElement.lang = saved;
+        document.documentElement.dir = saved === 'ar' ? 'rtl' : 'ltr';
+      }
+    } catch (e) {
+      // Storage blocked
     }
   }, []);
 
   const setLang = (newLang: Language) => {
     setLangState(newLang);
-    localStorage.setItem('svgulf_lang', newLang);
+    try {
+      localStorage.setItem('svgulf_lang', newLang);
+    } catch (e) {
+      // Storage blocked
+    }
     document.documentElement.lang = newLang;
     document.documentElement.dir = newLang === 'ar' ? 'rtl' : 'ltr';
   };

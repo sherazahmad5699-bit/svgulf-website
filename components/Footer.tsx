@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { useLanguage } from './LanguageContext';
 import { 
   Phone, 
@@ -12,12 +13,18 @@ import {
   Instagram, 
   MessageCircle, 
   Zap, 
-  CheckCircle2 
+  CheckCircle2,
+  Lock
 } from 'lucide-react';
 import { trackWhatsAppClick, trackPhoneCall } from '@/lib/analytics';
 
 export default function Footer() {
   const { t, lang } = useLanguage();
+  const pathname = usePathname();
+
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
 
   return (
     <footer className="bg-navy-dark text-slate-300 border-t border-navy-subtle/40 pt-16 pb-24 md:pb-12 px-4 sm:px-6 lg:px-8">
@@ -34,6 +41,7 @@ export default function Footer() {
                   width={48} 
                   height={48} 
                   className="object-contain w-full h-full"
+                  loading="lazy"
                 />
               </div>
               <div>
@@ -120,6 +128,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/blog" className="hover:text-cyan transition-colors">
+                  {lang === 'ar' ? 'المدونة ودليل الشراء' : 'Tech Blog & Guides'}
+                </Link>
+              </li>
+              <li>
                 <Link href="/contact" className="hover:text-cyan transition-colors">
                   {t.navContact}
                 </Link>
@@ -202,6 +215,11 @@ export default function Footer() {
             <span className="text-white/20">·</span>
             <Link href="/terms" className="hover:text-cyan transition-colors">
               {lang === 'ar' ? 'الشروط والأحكام' : 'Terms & Conditions'}
+            </Link>
+            <span className="text-white/20">·</span>
+            <Link href="/admin" className="text-white/40 hover:text-white/80 transition-colors inline-flex items-center gap-1 font-mono text-[11px]">
+              <Lock className="w-3 h-3" />
+              <span>Admin</span>
             </Link>
             <span className="text-white/20">·</span>
             <span>{t.footerCopyright}</span>

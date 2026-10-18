@@ -45,6 +45,22 @@ export async function POST(request: Request) {
     );
     const whatsappUrl = `https://wa.me/96894009501?text=${whatsappText}`;
 
+    // Record inquiry into persistent admin store
+    try {
+      const { addInquiry } = await import('@/lib/serverStore');
+      await addInquiry({
+        name: cleanName,
+        phone: cleanPhone,
+        email: cleanEmail !== 'Not provided' ? cleanEmail : undefined,
+        subject: cleanSubject,
+        message: cleanMessage,
+        source: 'contact_form',
+        status: 'new',
+      });
+    } catch (storeErr) {
+      console.warn('[Contact API] Store logging fallback:', storeErr);
+    }
+
     // If Resend API Key is set in environment, optionally dispatch notification
     const resendApiKey = process.env.RESEND_API_KEY;
     if (resendApiKey) {

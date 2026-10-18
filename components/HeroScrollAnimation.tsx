@@ -93,10 +93,10 @@ export default function HeroScrollAnimation() {
   return (
     <section 
       ref={heroRef}
-      className="relative min-h-[135vh] lg:min-h-[155vh] bg-gradient-to-b from-navy-deep via-[#020A24] to-navy-dark text-white"
+      className="relative min-h-screen lg:min-h-[155vh] bg-gradient-to-b from-navy-deep via-[#020A24] to-navy-dark text-white"
     >
-      {/* Pinned Sticky Stage */}
-      <div className="sticky top-0 min-h-screen flex flex-col justify-between overflow-hidden pt-8 pb-10 px-4 sm:px-6 lg:px-8">
+      {/* Pinned Sticky Stage on Desktop / Smooth Flow on Mobile */}
+      <div className="relative lg:sticky lg:top-0 min-h-screen lg:min-h-[100dvh] flex flex-col justify-between overflow-hidden pt-8 pb-10 px-4 sm:px-6 lg:px-8">
         
         {/* High-Tech Circuit Background Pattern */}
         <div 
@@ -223,7 +223,7 @@ export default function HeroScrollAnimation() {
                 y: laptopY,
                 transformStyle: 'preserve-3d',
               }}
-              className="relative w-full max-w-[530px] transition-transform duration-100 ease-out"
+              className="relative w-full max-w-[530px] transition-transform duration-100 ease-out scale-[0.88] sm:scale-95 lg:scale-100 origin-top lg:origin-center"
             >
               {/* Dynamic Ambient Base Glow */}
               <motion.div 

@@ -21,18 +21,25 @@ import {
   CheckCircle2, 
   MessageCircle, 
   Zap, 
-  Compass 
+  Compass,
+  BookOpen,
+  Clock 
 } from 'lucide-react';
 import { trackWhatsAppClick, trackFilterChange } from '@/lib/analytics';
+import { useSiteData } from '@/components/SiteDataContext';
 
 export default function HomeClient() {
   const { t, lang, dir } = useLanguage();
+  const { products: dynamicProducts, blogs } = useSiteData();
   const [selectedBrand, setSelectedBrand] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
+  const activeCatalog = dynamicProducts && dynamicProducts.length > 0 ? dynamicProducts : PRODUCTS;
+
   // Filter products for the home live showcase
-  const filteredProducts = PRODUCTS.filter((p) => {
+  const filteredProducts = activeCatalog.filter((p) => {
+
     if (selectedBrand !== 'all' && p.brand !== selectedBrand) return false;
     if (searchQuery.trim() !== '') {
       const q = searchQuery.toLowerCase();
@@ -423,7 +430,7 @@ export default function HomeClient() {
 
           <div className="lg:col-span-5 bg-white/5 border border-white/10 rounded-2xl p-6 text-center">
             <div className="w-20 h-20 rounded-2xl bg-white p-2 mx-auto mb-4 shadow-md flex items-center justify-center">
-              <Image src="/logo.jpeg" alt="Smart Vision Gulf" width={72} height={72} className="w-auto h-auto max-w-full max-h-full object-contain" />
+              <Image src="/logo.jpeg" alt="Smart Vision Gulf" width={72} height={72} className="w-auto h-auto max-w-full max-h-full object-contain" loading="lazy" />
             </div>
             <h3 className="text-lg font-black text-white">Smart Vision Gulf</h3>
             <p className="text-xs text-cyan-light font-mono mt-1 mb-4">Shop No. 10 · Ghala Heights</p>
@@ -440,6 +447,79 @@ export default function HomeClient() {
 
         </div>
       </section>
+
+      {/* 6.5 Latest Guides & Tech Articles */}
+      {blogs && blogs.length > 0 && (
+        <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+            <div>
+              <span className="text-xs font-mono uppercase tracking-widest text-orange font-bold bg-orange/10 px-3.5 py-1.5 rounded-xl border border-orange/20">
+                {lang === 'ar' ? 'المدونة ودليل الشراء' : 'Hardware Intelligence'}
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-navy mt-3">
+                {lang === 'ar' ? 'أحدث التقارير وأدلة الشراء في مسقط' : 'Latest Buying Guides & Hardware Reviews'}
+              </h2>
+            </div>
+            <Link
+              href="/blog"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-orange hover:underline shrink-0"
+            >
+              <span>{lang === 'ar' ? 'تصفح كافة المقالات' : 'Browse All Articles'}</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {blogs.filter((b) => b.published).slice(0, 3).map((b) => (
+              <div
+                key={b.id}
+                className="bg-white rounded-2xl overflow-hidden border border-slate-200/80 shadow-sm hover:shadow-md transition-all flex flex-col group"
+              >
+                <Link href={`/blog/${b.slug}`} className="relative h-44 bg-slate-100 p-4 flex items-center justify-center">
+                  <Image
+                    src={b.thumbnail || '/products/dell-latitude-5440.png'}
+                    alt={b.title}
+                    width={200}
+                    height={130}
+                    className="object-contain max-h-full group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                  />
+                  <div className="absolute top-3 left-3 flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-lg bg-white/90 text-navy font-bold shadow-sm">
+                    <Clock className="w-3 h-3 text-orange" />
+                    <span>{lang === 'ar' ? b.readingTimeAr : b.readingTime}</span>
+                  </div>
+                </Link>
+
+                <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
+                  <div>
+                    <h3 className="text-base font-bold text-navy group-hover:text-orange transition-colors line-clamp-2 leading-snug">
+                      <Link href={`/blog/${b.slug}`}>
+                        {lang === 'ar' ? b.titleAr : b.title}
+                      </Link>
+                    </h3>
+                    <p className="text-xs text-ink-muted mt-2 line-clamp-2">
+                      {lang === 'ar' ? b.excerptAr : b.excerpt}
+                    </p>
+                  </div>
+
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                    <span className="text-[11px] font-mono text-slate-400">
+                      {new Date(b.publishedAt).toLocaleDateString()}
+                    </span>
+                    <Link
+                      href={`/blog/${b.slug}`}
+                      className="text-xs font-bold text-orange hover:underline inline-flex items-center gap-1"
+                    >
+                      <span>{lang === 'ar' ? 'اقرأ المزيد' : 'Read Guide'}</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* 7. FAQ Accordion */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full">

@@ -17,20 +17,28 @@ import {
   ShieldCheck, 
   Building2, 
   Zap,
-  ChevronRight
+  ChevronRight,
+  BookOpen
 } from 'lucide-react';
 import { trackWhatsAppClick, trackPhoneCall } from '@/lib/analytics';
+import { useSiteData } from './SiteDataContext';
 
 export default function Navbar() {
   const { lang, toggleLang, t, dir } = useLanguage();
+  const { theme } = useSiteData();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
 
   const navLinks = [
     { href: '/', label: t.navHome, icon: Laptop },
     { href: '/inventory', label: t.navInventory, icon: Zap },
     { href: '/showroom', label: t.navShowroom, icon: Building2 },
     { href: '/warranty', label: t.navWarranty, icon: ShieldCheck },
+    { href: '/blog', label: lang === 'ar' ? 'المدونة' : 'Blog', icon: BookOpen },
     { href: '/contact', label: t.navContact, icon: MapPin },
   ];
 
@@ -40,6 +48,11 @@ export default function Navbar() {
     return false;
   };
 
+  const bannerText = theme?.announcementBanner?.enabled
+    ? (lang === 'ar' ? theme.announcementBanner.textAr : theme.announcementBanner.textEn)
+    : t.topDelivery;
+
+
   return (
     <header className="sticky top-0 z-50 w-full shadow-md bg-white">
       {/* Top Notification Strip */}
@@ -48,7 +61,7 @@ export default function Navbar() {
           <div className="flex items-center gap-4 flex-wrap">
             <span className="flex items-center gap-1.5 text-cyan-light font-medium">
               <Zap className="w-3.5 h-3.5 text-orange" />
-              <span>{t.topDelivery}</span>
+              <span>{bannerText}</span>
             </span>
             <span className="hidden md:inline-block text-white/30">|</span>
             <span className="hidden md:flex items-center gap-1.5 text-white/80">
@@ -63,14 +76,14 @@ export default function Navbar() {
               <span>{t.topHours}</span>
             </span>
             <a 
-              href="https://wa.me/96894009501?text=Hello%20Smart%20Vision%20Gulf,%20I%20have%20an%20inquiry" 
+              href={`https://wa.me/${(theme?.contactNumbers?.primaryWhatsApp || '96894009501').replace(/[^0-9]/g, '')}?text=Hello%20Smart%20Vision%20Gulf,%20I%20have%20an%20inquiry`} 
               target="_blank" 
               rel="noopener noreferrer"
-              onClick={() => trackPhoneCall('navbar_top')}
+              onClick={() => trackWhatsAppClick('navbar_top')}
               className="flex items-center gap-1.5 text-lime font-bold hover:underline"
             >
               <Phone className="w-3 h-3 fill-current" />
-              <span dir="ltr">+968 9400 9501</span>
+              <span dir="ltr">{theme?.contactNumbers?.primaryWhatsApp || '+968 9400 9501'}</span>
             </a>
           </div>
         </div>

@@ -1,15 +1,25 @@
 'use client';
 
 import React from 'react';
+import { usePathname } from 'next/navigation';
 import { useLanguage } from './LanguageContext';
+import { useSiteData } from './SiteDataContext';
 import { MessageCircle, Phone } from 'lucide-react';
 import { trackWhatsAppClick, trackPhoneCall } from '@/lib/analytics';
 
 export default function WhatsAppFloater() {
   const { t, dir } = useLanguage();
+  const { theme } = useSiteData();
+  const pathname = usePathname();
 
-  const waUrl = 'https://wa.me/96894009501?text=Hello%20Smart%20Vision%20Gulf,%20I%20am%20interested%20in%20your%20laptops';
-  const callUrl = 'tel:+96894009501';
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
+
+  const cleanPhone = (theme?.contactNumbers?.primaryWhatsApp || '96894009501').replace(/[^0-9]/g, '');
+  const waUrl = `https://wa.me/${cleanPhone}?text=Hello%20Smart%20Vision%20Gulf,%20I%20am%20interested%20in%20your%20laptops`;
+  const callUrl = `tel:${theme?.contactNumbers?.phoneCall || '+96894009501'}`;
+
 
   return (
     <>

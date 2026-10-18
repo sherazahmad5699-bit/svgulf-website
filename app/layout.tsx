@@ -8,6 +8,7 @@ import CookieBanner from '@/components/CookieBanner';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import WhatsAppFloater from '@/components/WhatsAppFloater';
+import { SiteDataProvider } from '@/components/SiteDataContext';
 
 const archivo = Archivo({
   subsets: ['latin'],
@@ -168,15 +169,17 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col font-sans antialiased text-ink bg-slate-50">
         <LanguageProvider>
           <ToastProvider>
-            <MotionProvider>
-              <Navbar />
-              <main className="flex-1">
-                {children}
-              </main>
-              <WhatsAppFloater />
-              <CookieBanner />
-              <Footer />
-            </MotionProvider>
+            <SiteDataProvider>
+              <MotionProvider>
+                <Navbar />
+                <main className="flex-1">
+                  {children}
+                </main>
+                <WhatsAppFloater />
+                <CookieBanner />
+                <Footer />
+              </MotionProvider>
+            </SiteDataProvider>
           </ToastProvider>
         </LanguageProvider>
       </body>

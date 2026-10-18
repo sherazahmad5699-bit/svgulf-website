@@ -132,7 +132,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         <Breadcrumb
           items={[
             { label: 'Inventory', labelAr: 'كتالوج الأجهزة', href: '/inventory' },
-            { label: product.name, labelAr: product.nameAr },
+            { label: product.name, labelAr: product.nameAr, href: `/inventory/${product.sku}` },
           ]}
         />
 

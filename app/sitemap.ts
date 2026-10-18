@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { PRODUCTS } from '@/data/products';
+import { SEED_BLOGS } from '@/data/seedData';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://svgulf.com';
@@ -17,6 +18,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: currentDate,
       changeFrequency: 'daily',
       priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/blog`,
+      lastModified: currentDate,
+      changeFrequency: 'daily',
+      priority: 0.8,
     },
     {
       url: `${baseUrl}/showroom`,
@@ -57,5 +64,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  return [...staticRoutes, ...productRoutes];
+  const blogRoutes: MetadataRoute.Sitemap = SEED_BLOGS.map((blog) => ({
+    url: `${baseUrl}/blog/${blog.slug}`,
+    lastModified: new Date(blog.publishedAt),
+    changeFrequency: 'monthly',
+    priority: 0.7,
+  }));
+
+  return [...staticRoutes, ...productRoutes, ...blogRoutes];
 }
+

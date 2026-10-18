@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { ShieldCheck, Cookie } from 'lucide-react';
 import { useLanguage } from './LanguageContext';
 
@@ -9,23 +10,33 @@ export default function CookieBanner() {
   const [mounted, setMounted] = useState(false);
   const [showBanner, setShowBanner] = useState(false);
   const { lang } = useLanguage();
+  const pathname = usePathname();
 
   useEffect(() => {
     setMounted(true);
-    const consent = localStorage.getItem('svgulf_cookie_consent');
-    if (!consent) {
-      // Delay slightly for smooth entrance
-      const timer = setTimeout(() => setShowBanner(true), 800);
-      return () => clearTimeout(timer);
+    try {
+      const consent = localStorage.getItem('svgulf_cookie_consent');
+      if (!consent) {
+        // Delay slightly for smooth entrance
+        const timer = setTimeout(() => setShowBanner(true), 800);
+        return () => clearTimeout(timer);
+      }
+    } catch (e) {
+      // Storage blocked in strict private browsing
     }
   }, []);
 
   const handleConsent = (choice: 'accepted' | 'declined') => {
-    localStorage.setItem('svgulf_cookie_consent', choice);
+    try {
+      localStorage.setItem('svgulf_cookie_consent', choice);
+    } catch (e) {
+      // Storage blocked
+    }
     setShowBanner(false);
   };
 
-  if (!mounted || !showBanner) return null;
+  if (!mounted || !showBanner || pathname?.startsWith('/admin')) return null;
+
 
   const isAr = lang === 'ar';
 

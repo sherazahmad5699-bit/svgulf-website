@@ -29,6 +29,7 @@ export default function ContactClient() {
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [whatsappLink, setWhatsappLink] = useState<string | null>(null);
 
   const subjectOptions = [
     { value: 'Laptop Stock & Availability', label: 'Laptop Stock & Availability Inquiry', labelAr: 'استفسار عن توفر موديل لابتوب معين' },
@@ -62,9 +63,12 @@ export default function ContactClient() {
 
         // Optional WhatsApp direct forward
         if (data.whatsappFallback) {
-          setTimeout(() => {
+          setWhatsappLink(data.whatsappFallback);
+          try {
             window.open(data.whatsappFallback, '_blank');
-          }, 600);
+          } catch (e) {
+            // Popup blocked by browser
+          }
         }
       } else {
         throw new Error(data.error || 'Failed to submit form');
@@ -94,7 +98,13 @@ export default function ContactClient() {
             `Please reply at your earliest convenience.`
           );
 
-      window.open(`https://wa.me/96894009501?text=${text}`, '_blank');
+      const fallbackUrl = `https://wa.me/96894009501?text=${text}`;
+      setWhatsappLink(fallbackUrl);
+      try {
+        window.open(fallbackUrl, '_blank');
+      } catch (e) {
+        // Popup blocked
+      }
       showToast(
         lang === 'ar' ? 'جاري تحويلك إلى واتساب...' : 'Redirecting to WhatsApp...',
         'info'
@@ -333,13 +343,32 @@ export default function ContactClient() {
               </button>
 
               {submitted && (
-                <div className="p-3 rounded-xl bg-lime-light text-lime-dark text-xs font-bold flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-lime" />
-                  <span>
-                    {lang === 'ar' 
-                      ? 'تم استلام استفسارك بنجاح! سنتواصل معك بأقرب وقت.' 
-                      : 'Inquiry submitted successfully! We will get in touch promptly.'}
-                  </span>
+                <div className="p-4 rounded-xl bg-lime-light border border-lime/30 text-ink space-y-3">
+                  <div className="flex items-center gap-2 text-lime-dark text-xs font-bold">
+                    <CheckCircle2 className="w-5 h-5 text-lime shrink-0" />
+                    <span>
+                      {lang === 'ar' 
+                        ? 'تم استلام استفسارك بنجاح! سنتواصل معك بأقرب وقت.' 
+                        : 'Inquiry submitted successfully! We will get in touch promptly.'}
+                    </span>
+                  </div>
+                  {whatsappLink && (
+                    <div className="pt-2 border-t border-lime/20 flex flex-wrap items-center justify-between gap-3">
+                      <span className="text-xs text-ink-muted">
+                        {lang === 'ar' ? 'أو تحدث معنا مباشرة الآن على واتساب:' : 'Or chat with us immediately on WhatsApp:'}
+                      </span>
+                      <a
+                        href={whatsappLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => trackWhatsAppClick('contact_submitted_banner')}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-lime hover:bg-lime-hover text-white text-xs font-bold shadow-sm transition-colors shrink-0"
+                      >
+                        <MessageCircle className="w-3.5 h-3.5 fill-current" />
+                        <span>{lang === 'ar' ? 'فتح المحادثة في واتساب' : 'Open WhatsApp'}</span>
+                      </a>
+                    </div>
+                  )}
                 </div>
               )}
             </form>

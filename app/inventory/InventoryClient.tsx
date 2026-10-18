@@ -26,10 +26,14 @@ import {
   Layers
 } from 'lucide-react';
 import { trackFilterChange, trackWhatsAppClick } from '@/lib/analytics';
+import { useSiteData } from '@/components/SiteDataContext';
 
 function InventoryContent() {
   const { t, lang, dir } = useLanguage();
+  const { products: dynamicProducts } = useSiteData();
   const searchParams = useSearchParams();
+
+  const activeProducts = dynamicProducts && dynamicProducts.length > 0 ? dynamicProducts : PRODUCTS;
 
   // Initialize filters from URL query parameters (e.g. /inventory?brand=dell)
   const initialBrand = searchParams.get('brand') || 'all';
@@ -49,7 +53,8 @@ function InventoryContent() {
 
   // Filter & Sort Logic
   const filteredProducts = useMemo(() => {
-    return PRODUCTS.filter((p) => {
+    return activeProducts.filter((p) => {
+
       // Brand Filter
       if (selectedBrand !== 'all' && p.brand !== selectedBrand) {
         return false;
@@ -107,7 +112,8 @@ function InventoryContent() {
       if (!a.featured && b.featured) return 1;
       return 0;
     });
-  }, [selectedBrand, selectedCondition, selectedPriceRange, selectedCpu, selectedRam, searchQuery, sortBy]);
+  }, [activeProducts, selectedBrand, selectedCondition, selectedPriceRange, selectedCpu, selectedRam, searchQuery, sortBy]);
+
 
   const handleBrandSelect = (brandId: string) => {
     setSelectedBrand(brandId);
@@ -185,7 +191,7 @@ function InventoryContent() {
             <div className="px-4 py-2 rounded-xl bg-white border border-ink-border text-xs font-bold text-navy shadow-sm">
               <span className="text-ink-muted">{lang === 'ar' ? 'المعروض:' : 'Showing:'} </span>
               <span className="text-orange font-black text-sm">{filteredProducts.length}</span>
-              <span className="text-ink-muted"> / {PRODUCTS.length} {lang === 'ar' ? 'موديل' : 'Models'}</span>
+              <span className="text-ink-muted"> / {activeProducts.length} {lang === 'ar' ? 'موديل' : 'Models'}</span>
             </div>
 
             {hasActiveFilters && (
