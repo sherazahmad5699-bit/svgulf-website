@@ -18,7 +18,8 @@ import {
   Building2, 
   Zap,
   ChevronRight,
-  BookOpen
+  BookOpen,
+  AlertTriangle
 } from 'lucide-react';
 import { trackWhatsAppClick, trackPhoneCall } from '@/lib/analytics';
 import { useSiteData } from './SiteDataContext';
@@ -52,9 +53,24 @@ export default function Navbar() {
     ? (lang === 'ar' ? theme.announcementBanner.textAr : theme.announcementBanner.textEn)
     : t.topDelivery;
 
+  const primaryPhoneClean = (theme?.contactNumbers?.primaryWhatsApp || '96894009501').replace(/[^0-9]/g, '');
+  const displayPhone = theme?.contactNumbers?.primaryWhatsApp || '+968 9400 9501';
 
   return (
     <header className="sticky top-0 z-50 w-full shadow-md bg-white">
+      {/* Emergency Store Alert Strip (if active) */}
+      {theme?.emergencyAlert?.enabled && (
+        <div className="bg-amber-400 text-navy-deep text-xs py-1.5 px-4 font-bold border-b border-amber-500">
+          <div className="max-w-7xl mx-auto flex items-center justify-center gap-2.5 text-center flex-wrap">
+            <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+            <span className="bg-navy-deep text-white text-[10px] uppercase font-mono px-2 py-0.5 rounded font-black">
+              {lang === 'ar' ? theme.emergencyAlert.badgeTextAr : theme.emergencyAlert.badgeTextEn}
+            </span>
+            <span>{lang === 'ar' ? theme.emergencyAlert.detailsAr : theme.emergencyAlert.detailsEn}</span>
+          </div>
+        </div>
+      )}
+
       {/* Top Notification Strip */}
       <div className="bg-navy-deep text-white text-xs border-b border-navy-subtle/50 py-2 px-4 transition-colors">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
@@ -76,18 +92,32 @@ export default function Navbar() {
               <span>{t.topHours}</span>
             </span>
             <a 
-              href={`https://wa.me/${(theme?.contactNumbers?.primaryWhatsApp || '96894009501').replace(/[^0-9]/g, '')}?text=Hello%20Smart%20Vision%20Gulf,%20I%20have%20an%20inquiry`} 
+              href={`https://wa.me/${primaryPhoneClean}?text=Hello%20Smart%20Vision%20Gulf,%20I%20have%20an%20inquiry`} 
               target="_blank" 
-              rel="noopener noreferrer"
+              rel="noopener noreferrer" 
               onClick={() => trackWhatsAppClick('navbar_top')}
               className="flex items-center gap-1.5 text-lime font-bold hover:underline"
             >
               <Phone className="w-3 h-3 fill-current" />
-              <span dir="ltr">{theme?.contactNumbers?.primaryWhatsApp || '+968 9400 9501'}</span>
+              <span dir="ltr">{displayPhone}</span>
             </a>
           </div>
         </div>
       </div>
+
+      {/* Promotional Voucher Ribbon (if enabled) */}
+      {theme?.promoBar?.enabled && (
+        <div className="bg-gradient-to-r from-orange to-orange-hover text-white text-xs py-1.5 px-4 shadow-inner">
+          <div className="max-w-7xl mx-auto flex items-center justify-center gap-3 text-center flex-wrap font-medium">
+            <span>{lang === 'ar' ? theme.promoBar.textAr : theme.promoBar.textEn}</span>
+            {theme.promoBar.code && (
+              <span className="font-mono bg-white text-navy-deep px-2 py-0.5 rounded text-[11px] font-black tracking-wider uppercase shadow-xs">
+                {theme.promoBar.code}
+              </span>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Main Navbar */}
       <nav className="bg-white/95 backdrop-blur-md border-b border-ink-border px-4 py-3 sm:py-3.5">
@@ -155,7 +185,7 @@ export default function Navbar() {
             </button>
 
             <a
-              href="https://wa.me/96894009501?text=Hello%20Smart%20Vision%20Gulf,%20I%20would%20like%20to%20inquire%20about%20your%20laptops"
+              href={`https://wa.me/${primaryPhoneClean}?text=Hello%20Smart%20Vision%20Gulf,%20I%20would%20like%20to%20inquire%20about%20your%20laptops`}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackWhatsAppClick('navbar_cta')}
@@ -215,7 +245,7 @@ export default function Navbar() {
 
               <div className="pt-2 mt-1 border-t border-slate-100">
                 <a
-                  href="https://wa.me/96894009501?text=Hello%20Smart%20Vision%20Gulf"
+                  href={`https://wa.me/${primaryPhoneClean}?text=Hello%20Smart%20Vision%20Gulf`}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => trackWhatsAppClick('navbar_mobile_menu')}

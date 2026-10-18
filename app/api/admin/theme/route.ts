@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getTheme, saveTheme } from '@/lib/serverStore';
+import { getTheme, saveTheme, isRequestAuthorized } from '@/lib/serverStore';
 import { ThemeSettings } from '@/lib/adminTypes';
 
 export async function GET() {
@@ -15,6 +15,13 @@ export async function GET() {
 }
 
 export async function PUT(request: Request) {
+  if (!isRequestAuthorized(request)) {
+    return NextResponse.json(
+      { error: 'Unauthorized. Admin session required.' },
+      { status: 401 }
+    );
+  }
+
   try {
     const body: ThemeSettings = await request.json();
     const updated = await saveTheme(body);

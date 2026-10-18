@@ -17,6 +17,7 @@ import {
   Monitor
 } from 'lucide-react';
 import { trackWhatsAppClick } from '@/lib/analytics';
+import { useSiteData } from './SiteDataContext';
 
 interface ProductCardProps {
   product: Product;
@@ -24,6 +25,7 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { lang, t, dir } = useLanguage();
+  const { theme } = useSiteData();
 
   // Pre-filled WhatsApp message for 1-click ordering
   const waMessage = lang === 'ar'
@@ -50,7 +52,8 @@ export default function ProductCard({ product }: ProductCardProps) {
         `Please confirm current availability. Thank you!`
       );
 
-  const waLink = `https://wa.me/96894009501?text=${waMessage}`;
+  const primaryPhone = (theme?.contactNumbers?.primaryWhatsApp || '96894009501').replace(/[^0-9]/g, '');
+  const waLink = `https://wa.me/${primaryPhone}?text=${waMessage}`;
 
   // Condition Badge styling
   const getConditionStyle = () => {

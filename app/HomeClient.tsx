@@ -30,7 +30,7 @@ import { useSiteData } from '@/components/SiteDataContext';
 
 export default function HomeClient() {
   const { t, lang, dir } = useLanguage();
-  const { products: dynamicProducts, blogs } = useSiteData();
+  const { products: dynamicProducts, blogs, theme } = useSiteData();
   const [selectedBrand, setSelectedBrand] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -308,7 +308,7 @@ export default function HomeClient() {
                   : 'Try searching with another keyword or ask us on WhatsApp for daily unlisted arrivals.'}
               </p>
               <a
-                href="https://wa.me/96894009501?text=Hello%20Smart%20Vision%20Gulf,%20I%20am%20looking%20for%20a%20laptop"
+                href={`https://wa.me/${(theme?.contactNumbers?.primaryWhatsApp || '96894009501').replace(/[^0-9]/g, '')}?text=Hello%20Smart%20Vision%20Gulf,%20I%20am%20looking%20for%20a%20laptop`}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => trackWhatsAppClick('home_empty_state')}
@@ -416,7 +416,7 @@ export default function HomeClient() {
               </a>
 
               <a
-                href="https://wa.me/96894009501?text=Hello%20Smart%20Vision%20Gulf,%20please%20send%20me%20your%20Ghala%20Heights%20location"
+                href={`https://wa.me/${(theme?.contactNumbers?.primaryWhatsApp || '96894009501').replace(/[^0-9]/g, '')}?text=Hello%20Smart%20Vision%20Gulf,%20please%20send%20me%20your%20Ghala%20Heights%20location`}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => trackWhatsAppClick('home_showroom_banner')}

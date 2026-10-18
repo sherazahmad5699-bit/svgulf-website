@@ -17,9 +17,11 @@ import {
   Lock
 } from 'lucide-react';
 import { trackWhatsAppClick, trackPhoneCall } from '@/lib/analytics';
+import { useSiteData } from './SiteDataContext';
 
 export default function Footer() {
   const { t, lang } = useLanguage();
+  const { theme } = useSiteData();
   const pathname = usePathname();
 
   if (pathname?.startsWith('/admin')) {
@@ -66,12 +68,12 @@ export default function Footer() {
               <div className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-lime shrink-0" />
                 <a
-                  href="tel:+96894009501"
+                  href={`tel:${theme?.contactNumbers?.phoneCall || '+96894009501'}`}
                   onClick={() => trackPhoneCall('footer')}
                   className="hover:text-white transition-colors"
                   dir="ltr"
                 >
-                  +968 9400 9501 / +968 9600 9404
+                  {theme?.contactNumbers?.phoneCall || '+968 9400 9501'} {theme?.contactNumbers?.secondaryWhatsApp ? `/ ${theme.contactNumbers.secondaryWhatsApp}` : ''}
                 </a>
               </div>
             </div>
@@ -89,7 +91,7 @@ export default function Footer() {
               </a>
 
               <a
-                href="https://wa.me/96894009501"
+                href={`https://wa.me/${(theme?.contactNumbers?.primaryWhatsApp || '96894009501').replace(/[^0-9]/g, '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => trackWhatsAppClick('footer')}

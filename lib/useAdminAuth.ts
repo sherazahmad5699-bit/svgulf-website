@@ -18,34 +18,45 @@ export function useAdminAuth() {
   const [user, setUser] = useState<AdminAuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check authentication status
+  // Check authentication status with cryptographic server verification
   const checkAuth = useCallback(async () => {
     setIsLoading(true);
     try {
-      const localToken = localStorage.getItem(AUTH_KEY);
-      const localUser = localStorage.getItem(USER_KEY);
+      const localToken = typeof window !== 'undefined' ? localStorage.getItem(AUTH_KEY) : null;
+      const localUser = typeof window !== 'undefined' ? localStorage.getItem(USER_KEY) : null;
 
+      // Optimistic user display to prevent UI jump
       if (localToken && localUser) {
-        setIsAuthenticated(true);
-        setUser(JSON.parse(localUser));
-        setIsLoading(false);
-        return true;
+        try {
+          setUser(JSON.parse(localUser));
+        } catch (e) {}
       }
 
-      // If no local token, verify server session
-      const res = await fetch('/api/admin/auth', { cache: 'no-store' });
+      const headers: Record<string, string> = {};
+      if (localToken && localToken !== 'session_active') {
+        headers['Authorization'] = `Bearer ${localToken}`;
+      }
+
+      const res = await fetch('/api/admin/auth', { cache: 'no-store', headers });
       if (res.ok) {
         const data = await res.json();
         if (data.authenticated) {
           setIsAuthenticated(true);
           setUser(data.user);
-          localStorage.setItem(AUTH_KEY, 'session_active');
+          if (data.token) {
+            localStorage.setItem(AUTH_KEY, data.token);
+          }
           localStorage.setItem(USER_KEY, JSON.stringify(data.user));
           setIsLoading(false);
           return true;
         }
       }
 
+      // Server rejected authentication: wipe forged / stale storage
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem(AUTH_KEY);
+        localStorage.removeItem(USER_KEY);
+      }
       setIsAuthenticated(false);
       setUser(null);
       setIsLoading(false);

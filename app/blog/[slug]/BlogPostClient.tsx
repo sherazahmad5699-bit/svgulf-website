@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { useSiteData } from '@/components/SiteDataContext';
 import { useLanguage } from '@/components/LanguageContext';
+import { BlogPost } from '@/lib/adminTypes';
 import Breadcrumb from '@/components/Breadcrumb';
 import ProductCard from '@/components/ProductCard';
 import {
@@ -19,20 +20,54 @@ import {
   ArrowLeft,
   ChevronRight,
   ShieldCheck,
-  Laptop
+  Laptop,
+  BookOpen
 } from 'lucide-react';
 import { trackWhatsAppClick } from '@/lib/analytics';
 
-export default function BlogPostClient({ initialSlug }: { initialSlug: string }) {
-  const { blogs, products } = useSiteData();
+interface BlogPostClientProps {
+  initialSlug: string;
+  initialBlog?: BlogPost;
+}
+
+export default function BlogPostClient({ initialSlug, initialBlog }: BlogPostClientProps) {
+  const { blogs, products, theme } = useSiteData();
   const { lang, dir } = useLanguage();
   const [copied, setCopied] = useState(false);
 
-  // Find blog post from dynamic context or seed
-  const blog = blogs.find((b) => b.slug === initialSlug);
+  // Find blog post from dynamic context or server initialBlog
+  const blog = blogs.find((b) => b.slug === initialSlug) || initialBlog;
 
   if (!blog) {
-    notFound();
+    return (
+      <div className="bg-slate-50 min-h-screen py-20 px-4 sm:px-6 lg:px-8 text-center" dir={dir}>
+        <div className="max-w-md mx-auto bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
+          <BookOpen className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+          <h2 className="text-2xl font-black text-navy mb-2">
+            {lang === 'ar' ? 'المقال غير متوفر' : 'Article Not Found'}
+          </h2>
+          <p className="text-xs text-ink-muted mb-6">
+            {lang === 'ar'
+              ? 'المقال الذي تبحث عنه قد تم نقله أو حذفه. يمكنك تصفح باقي مقالات المدونة أو التواصل معنا.'
+              : 'The requested guide could not be located. Browse our tech journal or speak with our Muscat hardware team.'}
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link
+              href="/blog"
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-orange hover:bg-orange-hover text-white font-bold text-xs shadow-md transition-all"
+            >
+              {lang === 'ar' ? 'تصفح جميع المقالات' : 'Browse All Guides'}
+            </Link>
+            <Link
+              href="/inventory"
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-navy font-bold text-xs transition-all"
+            >
+              {lang === 'ar' ? 'كتالوج الأجهزة' : 'Laptop Inventory'}
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const title = lang === 'ar' ? blog.titleAr : blog.title;
@@ -242,7 +277,7 @@ export default function BlogPostClient({ initialSlug }: { initialSlug: string })
 
             <div className="pt-2 flex flex-wrap items-center gap-3">
               <a
-                href={`https://wa.me/96894009501?text=${encodeURIComponent(
+                href={`https://wa.me/${(theme?.contactNumbers?.primaryWhatsApp || '96894009501').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
                   `Hello svGulf, I read your article "${title}" and want to inquire about availability.`
                 )}`}
                 target="_blank"
@@ -251,7 +286,7 @@ export default function BlogPostClient({ initialSlug }: { initialSlug: string })
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-lime hover:bg-lime-hover text-white text-xs font-bold shadow-md shadow-lime/20 transition-all"
               >
                 <MessageCircle className="w-4 h-4 fill-current" />
-                <span>{lang === 'ar' ? 'استفسر الآن على واتساب' : 'Inquire on WhatsApp (+968 94009501)'}</span>
+                <span>{lang === 'ar' ? 'استفسر الآن على واتساب' : `Inquire on WhatsApp (${theme?.contactNumbers?.primaryWhatsApp || '+968 94009501'})`}</span>
               </a>
 
               <Link

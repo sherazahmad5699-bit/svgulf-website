@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSiteData } from '@/components/SiteDataContext';
 import { useLanguage } from '@/components/LanguageContext';
 import { ThemeSettings } from '@/lib/adminTypes';
@@ -24,6 +24,12 @@ export default function AdminThemePage() {
 
   const [formState, setFormState] = useState<ThemeSettings>(JSON.parse(JSON.stringify(theme)));
   const [notification, setNotification] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (theme) {
+      setFormState(JSON.parse(JSON.stringify(theme)));
+    }
+  }, [theme]);
 
   const showNotification = (msg: string) => {
     setNotification(msg);

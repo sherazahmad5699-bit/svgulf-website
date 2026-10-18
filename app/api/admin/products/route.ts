@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getProducts, saveProduct, deleteProduct } from '@/lib/serverStore';
+import { getProducts, saveProduct, deleteProduct, isRequestAuthorized } from '@/lib/serverStore';
 import { Product } from '@/lib/adminTypes';
 
 export async function GET(request: Request) {
@@ -26,6 +26,13 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  if (!isRequestAuthorized(request)) {
+    return NextResponse.json(
+      { error: 'Unauthorized. Admin session required.' },
+      { status: 401 }
+    );
+  }
+
   try {
     const product: Product = await request.json();
 
@@ -56,6 +63,13 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  if (!isRequestAuthorized(request)) {
+    return NextResponse.json(
+      { error: 'Unauthorized. Admin session required.' },
+      { status: 401 }
+    );
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     let sku = searchParams.get('sku');

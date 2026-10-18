@@ -57,8 +57,8 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
   const cookieStore = cookies();
   const sessionToken = cookieStore.get('svgulf_admin_session')?.value;
-  const authHeader = request.headers.get('authorization')?.replace('Bearer ', '');
-  const token = sessionToken || authHeader;
+  const authHeader = request.headers.get('authorization')?.replace(/^Bearer\s+/i, '');
+  const token = authHeader || sessionToken;
 
   if (verifyAdminSessionToken(token)) {
     return NextResponse.json({
@@ -68,6 +68,7 @@ export async function GET(request: Request) {
         name: 'svGulf Admin Manager',
         role: 'superadmin',
       },
+      token: token || undefined,
     });
   }
 

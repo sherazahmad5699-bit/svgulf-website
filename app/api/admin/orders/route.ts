@@ -1,7 +1,14 @@
 import { NextResponse } from 'next/server';
-import { getInquiries, addInquiry, updateInquiry, deleteInquiry } from '@/lib/serverStore';
+import { getInquiries, addInquiry, updateInquiry, deleteInquiry, isRequestAuthorized } from '@/lib/serverStore';
 
-export async function GET() {
+export async function GET(request: Request) {
+  if (!isRequestAuthorized(request)) {
+    return NextResponse.json(
+      { error: 'Unauthorized. Admin session required to view leads.' },
+      { status: 401 }
+    );
+  }
+
   try {
     const inquiries = await getInquiries();
     return NextResponse.json(inquiries);
@@ -52,6 +59,13 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
+  if (!isRequestAuthorized(request)) {
+    return NextResponse.json(
+      { error: 'Unauthorized. Admin session required.' },
+      { status: 401 }
+    );
+  }
+
   try {
     const body = await request.json();
     const { id, ...updates } = body;
@@ -76,6 +90,13 @@ export async function PATCH(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  if (!isRequestAuthorized(request)) {
+    return NextResponse.json(
+      { error: 'Unauthorized. Admin session required.' },
+      { status: 401 }
+    );
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');

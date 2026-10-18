@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 
 export default function AdminSettingsPage() {
-  const { products, blogs, theme, inquiries, resetToFactory, refreshData } = useSiteData();
+  const { products, blogs, theme, inquiries, resetToFactory, refreshData, importStoreData } = useSiteData();
   const { lang, dir } = useLanguage();
 
   const [notification, setNotification] = useState<string | null>(null);
@@ -71,14 +71,8 @@ export default function AdminSettingsPage() {
         return;
       }
 
-      const res = await fetch('/api/admin/data', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ data: targetData }),
-      });
-
-      if (res.ok) {
-        await refreshData();
+      const success = await importStoreData(targetData);
+      if (success) {
         setImportStatus(null);
         showNotification('Store data imported successfully!');
       } else {

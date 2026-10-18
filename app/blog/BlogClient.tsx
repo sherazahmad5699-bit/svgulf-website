@@ -22,7 +22,7 @@ import {
 import { trackWhatsAppClick } from '@/lib/analytics';
 
 export default function BlogClient() {
-  const { blogs } = useSiteData();
+  const { blogs, theme } = useSiteData();
   const { lang, dir } = useLanguage();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -286,7 +286,7 @@ export default function BlogClient() {
           </div>
 
           <a
-            href="https://wa.me/96894009501?text=Hello%20svGulf,%20I%20read%20your%20blog%20and%20need%20advice%20choosing%20a%20laptop"
+            href={`https://wa.me/${(theme?.contactNumbers?.primaryWhatsApp || '96894009501').replace(/[^0-9]/g, '')}?text=Hello%20svGulf,%20I%20read%20your%20blog%20and%20need%20advice%20choosing%20a%20laptop`}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => trackWhatsAppClick('blog_cta_banner')}

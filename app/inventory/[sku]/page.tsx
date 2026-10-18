@@ -1,8 +1,9 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import { PRODUCTS } from '@/data/products';
+import { getProducts } from '@/lib/serverStore';
 import ProductDetailClient from './ProductDetailClient';
+
+export const dynamicParams = true;
 
 interface PageProps {
   params: {
@@ -10,17 +11,20 @@ interface PageProps {
   };
 }
 
-export function generateStaticParams() {
-  return PRODUCTS.map((product) => ({
+export async function generateStaticParams() {
+  const products = await getProducts();
+  return products.map((product) => ({
     sku: product.sku,
   }));
 }
 
-export function generateMetadata({ params }: PageProps): Metadata {
-  const product = PRODUCTS.find((p) => p.sku === params.sku);
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const products = await getProducts();
+  const product = products.find((p) => p.sku === params.sku);
   if (!product) {
     return {
       title: 'Model Not Found | Smart Vision Gulf',
+      description: 'The requested laptop hardware model could not be found.',
     };
   }
 
@@ -39,7 +43,7 @@ export function generateMetadata({ params }: PageProps): Metadata {
       siteName: 'Smart Vision Gulf',
       images: [
         {
-          url: '/og-image.jpg',
+          url: product.image || '/og-image.jpg',
           width: 1200,
           height: 630,
           alt: `${product.name} - Smart Vision Gulf`,
@@ -52,54 +56,58 @@ export function generateMetadata({ params }: PageProps): Metadata {
       card: 'summary_large_image',
       title: `${product.name} | svGulf Muscat`,
       description: `Grade A++ ${product.brandLabel} laptop in Muscat. 6-Month shop warranty.`,
-      images: ['/og-image.jpg'],
+      images: [product.image || '/og-image.jpg'],
     },
   };
 }
 
-export default function ProductDetailPage({ params }: PageProps) {
-  const product = PRODUCTS.find((p) => p.sku === params.sku);
+export default async function ProductDetailPage({ params }: PageProps) {
+  const products = await getProducts();
+  const product = products.find((p) => p.sku === params.sku);
 
-  if (!product) {
-    notFound();
-  }
-
-  const productSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: product.name,
-    sku: product.sku,
-    description: product.description,
-    image: 'https://svgulf.com/og-image.jpg',
-    brand: {
-      '@type': 'Brand',
-      name: product.brandLabel,
-    },
-    offers: {
-      '@type': 'Offer',
-      price: product.priceNumeric.toFixed(3),
-      priceCurrency: 'OMR',
-      itemCondition:
-        product.condition === 'Brand New'
-          ? 'https://schema.org/NewCondition'
-          : 'https://schema.org/RefurbishedCondition',
-      availability: 'https://schema.org/InStock',
-      seller: {
-        '@type': 'ElectronicsStore',
-        name: 'Smart Vision Gulf',
-        telephone: '+96894009501',
-      },
-      priceValidUntil: '2026-12-31',
-    },
-  };
+  const productSchema = product
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: product.name,
+        sku: product.sku,
+        description: product.description,
+        image: `https://svgulf.com${product.image || '/og-image.jpg'}`,
+        brand: {
+          '@type': 'Brand',
+          name: product.brandLabel,
+        },
+        offers: {
+          '@type': 'Offer',
+          price: product.priceNumeric.toFixed(3),
+          priceCurrency: 'OMR',
+          itemCondition:
+            product.condition === 'Brand New'
+              ? 'https://schema.org/NewCondition'
+              : 'https://schema.org/RefurbishedCondition',
+          availability:
+            product.inStock !== false
+              ? 'https://schema.org/InStock'
+              : 'https://schema.org/OutOfStock',
+          seller: {
+            '@type': 'ElectronicsStore',
+            name: 'Smart Vision Gulf',
+            telephone: '+96894009501',
+          },
+          priceValidUntil: '2026-12-31',
+        },
+      }
+    : null;
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
-      />
-      <ProductDetailClient product={product} />
+      {productSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+        />
+      )}
+      <ProductDetailClient initialProduct={product} sku={params.sku} />
     </>
   );
 }

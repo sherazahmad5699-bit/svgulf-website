@@ -1,8 +1,7 @@
 import { MetadataRoute } from 'next';
-import { PRODUCTS } from '@/data/products';
-import { SEED_BLOGS } from '@/data/seedData';
+import { getProducts, getBlogs } from '@/lib/serverStore';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://svgulf.com';
   const currentDate = new Date();
 
@@ -57,20 +56,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  const productRoutes: MetadataRoute.Sitemap = PRODUCTS.map((product) => ({
+  const products = await getProducts();
+  const productRoutes: MetadataRoute.Sitemap = products.map((product) => ({
     url: `${baseUrl}/inventory/${product.sku}`,
     lastModified: currentDate,
     changeFrequency: 'weekly',
     priority: 0.8,
   }));
 
-  const blogRoutes: MetadataRoute.Sitemap = SEED_BLOGS.map((blog) => ({
+  const blogs = await getBlogs();
+  const blogRoutes: MetadataRoute.Sitemap = blogs.map((blog) => ({
     url: `${baseUrl}/blog/${blog.slug}`,
-    lastModified: new Date(blog.publishedAt),
+    lastModified: new Date(blog.publishedAt || currentDate),
     changeFrequency: 'monthly',
     priority: 0.7,
   }));
 
   return [...staticRoutes, ...productRoutes, ...blogRoutes];
 }
-

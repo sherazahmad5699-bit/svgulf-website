@@ -19,9 +19,11 @@ import {
   Laptop
 } from 'lucide-react';
 import { trackWhatsAppClick } from '@/lib/analytics';
+import { useSiteData } from './SiteDataContext';
 
 export default function HeroScrollAnimation() {
   const { t, lang, dir } = useLanguage();
+  const { theme } = useSiteData();
   const heroRef = useRef<HTMLDivElement>(null);
   const [activeModelIndex, setActiveModelIndex] = useState(0);
 
@@ -90,6 +92,24 @@ export default function HeroScrollAnimation() {
 
   const currentModel = showcaseModels[activeModelIndex];
 
+  const heroBadge = theme?.heroHeadline
+    ? (lang === 'ar' ? theme.heroHeadline.badgeAr : theme.heroHeadline.badgeEn)
+    : t.heroBadge;
+  const heroTitlePart1 = theme?.heroHeadline
+    ? (lang === 'ar' ? theme.heroHeadline.titlePart1Ar : theme.heroHeadline.titlePart1En)
+    : t.heroTitlePart1;
+  const heroTitleHighlight = theme?.heroHeadline
+    ? (lang === 'ar' ? theme.heroHeadline.titleHighlightAr : theme.heroHeadline.titleHighlightEn)
+    : t.heroTitleHighlight;
+  const heroSubtitle = theme?.heroHeadline
+    ? (lang === 'ar' ? theme.heroHeadline.subtitleAr : theme.heroHeadline.subtitleEn)
+    : t.heroSubtitle;
+
+  const primaryWhatsApp = (theme?.contactNumbers?.primaryWhatsApp || '96894009501').replace(/[^0-9]/g, '');
+  const showroomWaUrl = `https://wa.me/${primaryWhatsApp}?text=${encodeURIComponent(
+    theme?.contactNumbers?.defaultWhatsAppMessage || 'Hello Smart Vision Gulf, I want to visit your Ghala Heights showroom'
+  )}`;
+
   return (
     <section 
       ref={heroRef}
@@ -130,7 +150,7 @@ export default function HeroScrollAnimation() {
             >
               <span className="w-2 h-2 rounded-full bg-lime animate-ping" />
               <span className="w-2 h-2 rounded-full bg-lime -ml-4" />
-              <span>{t.heroBadge}</span>
+              <span>{heroBadge}</span>
             </motion.div>
 
             {/* Main Title */}
@@ -140,9 +160,9 @@ export default function HeroScrollAnimation() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-3xl sm:text-5xl xl:text-6xl font-black tracking-tight leading-[1.12] mb-6"
             >
-              {t.heroTitlePart1}
+              {heroTitlePart1}
               <span className="text-orange bg-clip-text text-transparent bg-gradient-to-r from-orange via-amber-400 to-orange drop-shadow-sm">
-                {t.heroTitleHighlight}
+                {heroTitleHighlight}
               </span>
             </motion.h1>
 
@@ -153,7 +173,7 @@ export default function HeroScrollAnimation() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-base sm:text-lg text-slate-300 font-normal leading-relaxed mb-8 max-w-xl"
             >
-              {t.heroSubtitle}
+              {heroSubtitle}
             </motion.p>
 
             {/* CTA Group */}
@@ -172,7 +192,7 @@ export default function HeroScrollAnimation() {
               </Link>
 
               <a
-                href="https://wa.me/96894009501?text=Hello%20Smart%20Vision%20Gulf,%20I%20want%20to%20visit%20your%20Ghala%20Heights%20showroom"
+                href={showroomWaUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => trackWhatsAppClick('hero_showroom_cta')}

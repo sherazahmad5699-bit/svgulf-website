@@ -38,6 +38,7 @@ export interface Product {
     ramOptions: { label: string; labelAr?: string; price: number }[];
     ssdOptions: { label: string; labelAr?: string; price: number }[];
   };
+  inStock?: boolean;
 }
 
 export const PRODUCTS: Product[] = [

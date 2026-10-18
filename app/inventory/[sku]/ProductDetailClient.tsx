@@ -7,6 +7,7 @@ import { Product, PRODUCTS } from '@/data/products';
 import Breadcrumb from '@/components/Breadcrumb';
 import ProductCard from '@/components/ProductCard';
 import { trackWhatsAppClick } from '@/lib/analytics';
+import { useSiteData } from '@/components/SiteDataContext';
 import { 
   ChevronRight, 
   BatteryCharging, 
@@ -25,33 +26,68 @@ import {
 } from 'lucide-react';
 
 interface ProductDetailClientProps {
-  product: Product;
+  initialProduct?: Product;
+  sku: string;
 }
 
-export default function ProductDetailClient({ product }: ProductDetailClientProps) {
+export default function ProductDetailClient({ initialProduct, sku }: ProductDetailClientProps) {
   const { lang, t, dir } = useLanguage();
+  const { products, theme } = useSiteData();
+
+  // Configurator Upgrade State (declared unconditionally at top to satisfy React Rules of Hooks)
+  const [selectedRamUpgrade, setSelectedRamUpgrade] = useState<number>(0);
+  const [selectedRamLabel, setSelectedRamLabel] = useState<string>('Standard Included');
+  const [selectedRamLabelAr, setSelectedRamLabelAr] = useState<string>('الأساسي المعتمد');
+
+  const [selectedSsdUpgrade, setSelectedSsdUpgrade] = useState<number>(0);
+  const [selectedSsdLabel, setSelectedSsdLabel] = useState<string>('Standard Included');
+  const [selectedSsdLabelAr, setSelectedSsdLabelAr] = useState<string>('الأساسي المعتمد');
+
+  const [deliveryMethod, setDeliveryMethod] = useState<string>('Muscat Same-Day Delivery (Cash on Delivery)');
+  const [deliveryMethodAr, setDeliveryMethodAr] = useState<string>('توصيل في نفس اليوم داخل مسقط (كاش عند الاستلام)');
+
+  // Resolve live dynamic product or server initialProduct
+  const product = products.find((p) => p.sku === sku) || initialProduct;
+
+  if (!product) {
+    return (
+      <div className="bg-slate-50 min-h-screen py-20 px-4 sm:px-6 lg:px-8 text-center" dir={dir}>
+        <div className="max-w-md mx-auto bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
+          <Laptop className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+          <h2 className="text-2xl font-black text-navy mb-2">
+            {lang === 'ar' ? 'الجهاز غير متوفر حالياً' : 'Product Model Not Found'}
+          </h2>
+          <p className="text-xs text-ink-muted mb-6">
+            {lang === 'ar'
+              ? 'قد يكون هذا الجهاز قد تم حجزه أو بيعه، أو أن الرابط غير صحيح. تفضل بتصفح الكتالوج المباشر أو تواصل معنا.'
+              : 'This device may be temporarily out of stock or sold. Browse our live catalog or message us directly on WhatsApp.'}
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link
+              href="/inventory"
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-orange hover:bg-orange-hover text-white font-bold text-xs shadow-md transition-all"
+            >
+              {lang === 'ar' ? 'تصفح كافة الأجهزة' : 'Browse All Laptops'}
+            </Link>
+            <a
+              href={`https://wa.me/${(theme?.contactNumbers?.primaryWhatsApp || '96894009501').replace(/[^0-9]/g, '')}?text=Hello%20svGulf,%20I%20am%20looking%20for%20SKU:%20${encodeURIComponent(sku)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-lime hover:bg-lime-hover text-white font-bold text-xs shadow-md transition-all inline-flex items-center justify-center gap-2"
+            >
+              <MessageCircle className="w-4 h-4 fill-current" />
+              <span>{lang === 'ar' ? 'استفسر على واتساب' : 'Inquire on WhatsApp'}</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const isAccessory = product.category === 'monitor' || product.category === 'accessory';
 
   // Related products for internal cross-linking
-  const relatedProducts = PRODUCTS.filter(p => p.sku !== product.sku).slice(0, 4);
-
-  // Configurator Upgrade State
-  const initialRamLabel = product.upgradeOptions?.ramOptions?.[0]?.label || 'Standard Included';
-  const initialRamLabelAr = product.upgradeOptions?.ramOptions?.[0]?.labelAr || 'الأساسي المعتمد';
-  const initialSsdLabel = product.upgradeOptions?.ssdOptions?.[0]?.label || 'Standard Included';
-  const initialSsdLabelAr = product.upgradeOptions?.ssdOptions?.[0]?.labelAr || 'الأساسي المعتمد';
-
-  const [selectedRamUpgrade, setSelectedRamUpgrade] = useState<number>(0);
-  const [selectedRamLabel, setSelectedRamLabel] = useState<string>(initialRamLabel);
-  const [selectedRamLabelAr, setSelectedRamLabelAr] = useState<string>(initialRamLabelAr);
-
-  const [selectedSsdUpgrade, setSelectedSsdUpgrade] = useState<number>(0);
-  const [selectedSsdLabel, setSelectedSsdLabel] = useState<string>(initialSsdLabel);
-  const [selectedSsdLabelAr, setSelectedSsdLabelAr] = useState<string>(initialSsdLabelAr);
-
-  const [deliveryMethod, setDeliveryMethod] = useState<string>('Muscat Same-Day Delivery (Cash on Delivery)');
-  const [deliveryMethodAr, setDeliveryMethodAr] = useState<string>('توصيل في نفس اليوم داخل مسقط (كاش عند الاستلام)');
+  const relatedProducts = (products.length > 0 ? products : PRODUCTS).filter(p => p.sku !== product.sku).slice(0, 4);
 
   const deliveryOptions = [
     {
@@ -111,7 +147,8 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         `Please confirm order and dispatch timing. Thank you!`
       );
 
-  const waOrderLink = `https://wa.me/96894009501?text=${waOrderText}`;
+  const primaryWhatsApp = (theme?.contactNumbers?.primaryWhatsApp || '96894009501').replace(/[^0-9]/g, '');
+  const waOrderLink = `https://wa.me/${primaryWhatsApp}?text=${waOrderText}`;
 
   // Stylized device badge color accent
   const getBrandAccent = () => {
