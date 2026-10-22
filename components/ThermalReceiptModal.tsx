@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useLanguage } from './LanguageContext';
+import { useSiteData } from './SiteDataContext';
 import { Product } from '@/data/products';
 import { Printer, X, Receipt, CheckCircle2, ShieldCheck, QrCode } from 'lucide-react';
 
@@ -17,17 +18,33 @@ interface ThermalReceiptModalProps {
 export default function ThermalReceiptModal({
   isOpen,
   onClose,
-  product,
+  product: initialProduct,
   customerName = 'Walk-In Customer',
   customerPhone = '+968 9400 9501',
-  totalAmount,
+  totalAmount: initialTotalAmount,
 }: ThermalReceiptModalProps) {
   const { lang, dir } = useLanguage();
+  const { products } = useSiteData();
+
+  const [selectedSku, setSelectedSku] = useState(initialProduct?.sku || (products[0]?.sku || ''));
   const [custName, setCustName] = useState(customerName);
   const [custPhone, setCustPhone] = useState(customerPhone);
   const [paymentMethod, setPaymentMethod] = useState('Cash (COD / Counter)');
+  const [customPrice, setCustomPrice] = useState<string>(
+    initialTotalAmount ? initialTotalAmount.toFixed(3) : (initialProduct?.priceNumeric ? initialProduct.priceNumeric.toFixed(3) : '140.000')
+  );
 
   if (!isOpen) return null;
+
+  const activeProduct = products.find((p) => p.sku === selectedSku) || initialProduct || products[0];
+
+  const handleProductChange = (sku: string) => {
+    setSelectedSku(sku);
+    const p = products.find((prod) => prod.sku === sku);
+    if (p) {
+      setCustomPrice(p.priceNumeric.toFixed(3));
+    }
+  };
 
   const receiptNo = `SVG-POS-${new Date().toISOString().slice(2, 10).replace(/-/g, '')}-${Math.floor(100 + Math.random() * 900)}`;
   const dateTimeStr = new Date().toLocaleString('en-GB', {
@@ -39,7 +56,8 @@ export default function ThermalReceiptModal({
     hour12: true,
   });
 
-  const grossTotal = totalAmount || product?.priceNumeric || 140.000;
+  const parsedAmount = parseFloat(customPrice);
+  const grossTotal = !isNaN(parsedAmount) && parsedAmount > 0 ? parsedAmount : (activeProduct?.priceNumeric || 140.000);
   const netTotal = grossTotal / 1.05;
   const vatTotal = grossTotal - netTotal;
 
@@ -69,6 +87,21 @@ export default function ThermalReceiptModal({
 
         {/* Input Bar (Screen Only) */}
         <div className="p-4 bg-slate-50 border-b border-slate-200 space-y-2 text-xs print:hidden">
+          <div>
+            <label className="block text-[10px] font-bold text-slate-500 uppercase">Select Product / Model:</label>
+            <select
+              value={selectedSku}
+              onChange={(e) => handleProductChange(e.target.value)}
+              className="w-full p-1.5 rounded-lg border border-slate-300 font-semibold text-xs"
+            >
+              {products.map((p) => (
+                <option key={p.sku} value={p.sku}>
+                  {p.name} ({p.priceFormatted})
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div className="grid grid-cols-2 gap-2">
             <div>
               <label className="block text-[10px] font-bold text-slate-500 uppercase">Customer Name:</label>
@@ -89,17 +122,30 @@ export default function ThermalReceiptModal({
               />
             </div>
           </div>
-          <div>
-            <label className="block text-[10px] font-bold text-slate-500 uppercase">Payment Method:</label>
-            <select
-              value={paymentMethod}
-              onChange={(e) => setPaymentMethod(e.target.value)}
-              className="w-full p-1.5 rounded-lg border border-slate-300 font-semibold text-xs"
-            >
-              <option value="Cash on Delivery / Walk-In">Cash on Delivery / Walk-In (COD)</option>
-              <option value="POS Card Terminal (OmanNet/Visa)">POS Card Terminal (OmanNet / Visa)</option>
-              <option value="Bank Muscat Mobile Transfer">Bank Muscat Mobile Transfer</option>
-            </select>
+
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="block text-[10px] font-bold text-slate-500 uppercase">Total Amount (OMR):</label>
+              <input
+                type="number"
+                step="0.001"
+                value={customPrice}
+                onChange={(e) => setCustomPrice(e.target.value)}
+                className="w-full p-1.5 rounded-lg border border-slate-300 font-semibold text-xs font-mono"
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-slate-500 uppercase">Payment Method:</label>
+              <select
+                value={paymentMethod}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+                className="w-full p-1.5 rounded-lg border border-slate-300 font-semibold text-xs"
+              >
+                <option value="Cash on Delivery / Walk-In">Cash (COD / Walk-In)</option>
+                <option value="POS Card Terminal (OmanNet/Visa)">POS Terminal (OmanNet/Visa)</option>
+                <option value="Bank Muscat Mobile Transfer">Bank Muscat Transfer</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -142,10 +188,10 @@ export default function ThermalReceiptModal({
 
           {/* Item details */}
           <div className="space-y-1">
-            <div className="font-bold text-[12px]">{product?.name || 'Enterprise Certified Laptop'}</div>
-            <div className="text-[10px] text-slate-700">SKU: {product?.sku || 'SVG-PRO-MOD'}</div>
-            <div className="text-[10px]">• Specs: {product?.cpu || 'Core i5/i7'} · {product?.ram || '16GB'} · {product?.ssd || '512GB SSD'}</div>
-            <div className="text-[10px]">• Condition: {product?.condition || 'Grade A++'} ({product?.batteryHealth || '90% Verified'})</div>
+            <div className="font-bold text-[12px]">{activeProduct?.name || 'Enterprise Certified Laptop'}</div>
+            <div className="text-[10px] text-slate-700">SKU: {activeProduct?.sku || 'SVG-PRO-MOD'}</div>
+            <div className="text-[10px]">• Specs: {activeProduct?.cpu || 'Core i5/i7'} · {activeProduct?.ram || '16GB'} · {activeProduct?.ssd || '512GB SSD'}</div>
+            <div className="text-[10px]">• Condition: {activeProduct?.condition || 'Grade A++'} ({activeProduct?.batteryHealth || '90% Verified'})</div>
             <div className="text-[10px]">• Includes: OEM Charger &amp; Backlit Ar/En Keyboard</div>
             
             <div className="flex justify-between pt-1 font-bold text-[11px]">
@@ -186,7 +232,7 @@ export default function ThermalReceiptModal({
             <div>Scan or visit svgulf.com/warranty to verify coverage</div>
             <div className="py-1 flex justify-center">
               <div className="border border-black p-1 text-[8px] uppercase tracking-widest font-black">
-                [ QR: SVGULF-CERT-{product?.sku || 'VERIFIED'} ]
+                [ QR: SVGULF-CERT-{activeProduct?.sku || 'VERIFIED'} ]
               </div>
             </div>
             <div className="font-bold">Thank You For Choosing Smart Vision Gulf!</div>

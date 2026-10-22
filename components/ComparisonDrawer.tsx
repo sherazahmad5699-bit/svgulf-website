@@ -215,6 +215,33 @@ export default function ComparisonDrawer() {
                           <span className="text-[11px]">{lang === 'ar' ? product.warrantyAr : product.warranty}</span>
                         </div>
 
+                        {/* RAM / SSD Upgrade Options Comparison */}
+                        <div className="p-2.5 rounded-xl bg-orange-light/50 border border-orange/20 flex flex-col gap-1 text-[11px]">
+                          <span className="text-[10px] font-bold text-orange-dark uppercase block">
+                            {lang === 'ar' ? 'خيارات ترقية الرام والتخزين' : 'RAM & SSD Upgrade Options'}
+                          </span>
+                          {product.upgradeOptions && (product.upgradeOptions.ramOptions?.length > 1 || product.upgradeOptions.ssdOptions?.length > 1) ? (
+                            <div className="space-y-0.5">
+                              {product.upgradeOptions.ramOptions?.filter(o => o.price > 0).map((opt, i) => (
+                                <div key={`ram-${i}`} className="text-navy font-medium flex items-center gap-1">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-orange shrink-0" />
+                                  <span>{lang === 'ar' ? (opt.labelAr || opt.label) : opt.label}</span>
+                                </div>
+                              ))}
+                              {product.upgradeOptions.ssdOptions?.filter(o => o.price > 0).map((opt, i) => (
+                                <div key={`ssd-${i}`} className="text-navy font-medium flex items-center gap-1">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-orange shrink-0" />
+                                  <span>{lang === 'ar' ? (opt.labelAr || opt.label) : opt.label}</span>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="text-ink-muted">
+                              {lang === 'ar' ? 'المواصفات الأصلية المعتمدة (غير قابلة للترقية)' : 'Standard certified factory config'}
+                            </span>
+                          )}
+                        </div>
+
                         <div className="p-2.5 rounded-xl bg-white border border-slate-200 text-[11px]">
                           <span className="text-[10px] font-bold text-ink-faint uppercase block">
                             {lang === 'ar' ? 'الكيبورد والشاحن' : 'Keyboard & Accessories'}

@@ -64,9 +64,10 @@ export default function ProductDetailClient({ initialProduct, sku }: ProductDeta
   const [isQuotationModalOpen, setIsQuotationModalOpen] = useState(false);
   const [isShowroomModalOpen, setIsShowroomModalOpen] = useState(false);
   const [showCertChecklist, setShowCertChecklist] = useState(false);
-  const [deliveryCountdown, setDeliveryCountdown] = useState(getSameDayDeliveryCountdown());
+  const [deliveryCountdown, setDeliveryCountdown] = useState<ReturnType<typeof getSameDayDeliveryCountdown> | null>(null);
 
   useEffect(() => {
+    setDeliveryCountdown(getSameDayDeliveryCountdown());
     const timer = setInterval(() => {
       setDeliveryCountdown(getSameDayDeliveryCountdown());
     }, 60000);
@@ -523,7 +524,13 @@ export default function ProductDetailClient({ initialProduct, sku }: ProductDeta
               <div className="mt-4 p-4 rounded-2xl bg-gradient-to-r from-orange/10 via-amber-50 to-white border border-orange/20 space-y-2">
                 <div className="flex items-center gap-2 text-xs font-extrabold text-navy">
                   <Clock className="w-4 h-4 text-orange shrink-0" />
-                  <span>{lang === 'ar' ? deliveryCountdown.formattedAr : deliveryCountdown.formattedEn}</span>
+                  <span>
+                    {deliveryCountdown
+                      ? (lang === 'ar' ? deliveryCountdown.formattedAr : deliveryCountdown.formattedEn)
+                      : (lang === 'ar'
+                          ? 'اطلب قبل 5:00 مساءً للتوصيل المجاني في نفس اليوم داخل مسقط'
+                          : 'Order before 5:00 PM for Free Same-Day Delivery across Muscat')}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2 text-xs font-bold text-emerald-800">
                   <PackageCheck className="w-4 h-4 text-lime shrink-0" />

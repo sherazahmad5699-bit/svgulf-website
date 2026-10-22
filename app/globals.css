@@ -76,4 +76,31 @@ body {
     padding: 0 !important;
     margin: 0 !important;
   }
+  .fixed.inset-0 {
+    position: static !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+  }
+  #thermal-80mm-receipt {
+    width: 78mm !important;
+    max-width: 78mm !important;
+    margin: 0 auto !important;
+    padding: 2mm !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  #printable-quotation {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+}
+
+@page {
+  margin: 4mm;
+  size: auto;
 }

@@ -24,6 +24,65 @@ export const metadata: Metadata = {
   },
 };
 
+const ghalaBusinessSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ComputerStore',
+  '@id': 'https://svgulf.com/laptops-ghala-heights#store',
+  name: 'Smart Vision Gulf - Ghala Heights Laptop Showroom',
+  alternateName: ['svGulf Ghala Heights', 'معرض سمارت فيجن جلف غلا هايتس'],
+  url: 'https://svgulf.com/laptops-ghala-heights',
+  logo: 'https://svgulf.com/logo.jpeg',
+  image: 'https://svgulf.com/og-image.jpg',
+  telephone: '+96894009501',
+  priceRange: 'OMR 75.000 - OMR 899.000',
+  currenciesAccepted: 'OMR',
+  paymentAccepted: 'Cash, POS Card Terminal, Bank Muscat Mobile Transfer, Cash on Delivery',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Shop No. 10, Ground Floor, Ghala Heights',
+    addressLocality: 'Ghala Heights',
+    addressRegion: 'Wilayat Bausher, Muscat',
+    addressCountry: 'OM',
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: 23.5715,
+    longitude: 58.3842,
+  },
+  areaServed: {
+    '@type': 'AdministrativeArea',
+    name: 'Ghala Heights, Wilayat Bausher, Muscat',
+  },
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'],
+      opens: '09:00',
+      closes: '13:00',
+    },
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'],
+      opens: '16:30',
+      closes: '22:00',
+    },
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Friday'],
+      opens: '16:30',
+      closes: '22:00',
+    },
+  ],
+};
+
 export default function LaptopsGhalaHeightsPage() {
-  return <GhalaLandingClient />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ghalaBusinessSchema) }}
+      />
+      <GhalaLandingClient />
+    </>
+  );
 }

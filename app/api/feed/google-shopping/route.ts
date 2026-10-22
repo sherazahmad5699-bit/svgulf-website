@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getStoreData } from '@/lib/serverStore';
 
+export const dynamic = 'force-dynamic';
+
 function escapeXml(unsafe: string): string {
   if (!unsafe) return '';
   return unsafe
@@ -39,8 +41,14 @@ export async function GET() {
       <g:price>${product.priceNumeric.toFixed(3)} OMR</g:price>
       <g:brand>${escapeXml(product.brandLabel)}</g:brand>
       <g:product_type>Electronics &gt; Computers &gt; Laptops</g:product_type>
+      <g:google_product_category>228</g:google_product_category>
       <g:mpn>${escapeXml(product.sku)}</g:mpn>
       <g:identifier_exists>no</g:identifier_exists>
+      <g:shipping>
+        <g:country>OM</g:country>
+        <g:service>Express Same-Day Delivery</g:service>
+        <g:price>0.000 OMR</g:price>
+      </g:shipping>
     </item>`;
       })
       .join('\n');

@@ -25,6 +25,41 @@ export const metadata: Metadata = {
   },
 };
 
+const salalahBusinessSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ComputerStore',
+  '@id': 'https://svgulf.com/laptops-salalah#store',
+  name: 'Smart Vision Gulf - Salalah & Dhofar Express Laptop Delivery',
+  alternateName: ['svGulf Salalah', 'سمارت فيجن جلف صلالة'],
+  url: 'https://svgulf.com/laptops-salalah',
+  logo: 'https://svgulf.com/logo.jpeg',
+  image: 'https://svgulf.com/og-image.jpg',
+  telephone: '+96894009501',
+  priceRange: 'OMR 75.000 - OMR 899.000',
+  currenciesAccepted: 'OMR',
+  paymentAccepted: 'Cash on Delivery, Bank Muscat Transfer',
+  areaServed: [
+    { '@type': 'City', name: 'Salalah' },
+    { '@type': 'AdministrativeArea', name: 'Dhofar Governorate' },
+    { '@type': 'CollegeOrUniversity', name: 'Dhofar University' },
+  ],
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Shop No. 10, Ghala Heights (Dispatch Center to Salalah)',
+    addressLocality: 'Muscat',
+    addressRegion: 'Sultanate of Oman',
+    addressCountry: 'OM',
+  },
+};
+
 export default function LaptopsSalalahPage() {
-  return <SalalahLandingClient />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(salalahBusinessSchema) }}
+      />
+      <SalalahLandingClient />
+    </>
+  );
 }

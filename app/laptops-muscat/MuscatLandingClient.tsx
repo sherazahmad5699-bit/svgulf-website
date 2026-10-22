@@ -20,12 +20,10 @@ import {
   Sparkles
 } from 'lucide-react';
 import { trackWhatsAppClick } from '@/lib/analytics';
-import { getMuscatShowroomStatus } from '@/lib/muscatTime';
 
 export default function MuscatLandingClient() {
   const { lang, dir } = useLanguage();
   const { products, theme } = useSiteData();
-  const showroomStatus = getMuscatShowroomStatus();
 
   const primaryPhone = (theme?.contactNumbers?.primaryWhatsApp || '96894009501').replace(/[^0-9]/g, '');
 

@@ -19,17 +19,88 @@ export interface MuscatShowroomStatus {
   currentMuscatTime: string;
 }
 
+export interface MuscatTimeParts {
+  day: number; // 0 = Sun, 1 = Mon, ..., 5 = Fri, 6 = Sat
+  hours: number;
+  minutes: number;
+  timeFormatted: string;
+}
+
+/**
+ * Accurately extracts Muscat local time components using Intl.DateTimeFormat (Asia/Muscat),
+ * completely immune to client browser local machine timezone offsets.
+ */
+export function getMuscatTimeParts(): MuscatTimeParts {
+  const now = new Date();
+  const dtf = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Muscat',
+    hourCycle: 'h23',
+    weekday: 'short',
+    hour: 'numeric',
+    minute: 'numeric',
+  });
+
+  const parts = dtf.formatToParts(now);
+  const partMap: Record<string, string> = {};
+  for (const p of parts) {
+    partMap[p.type] = p.value;
+  }
+
+  const dayMap: Record<string, number> = {
+    Sun: 0,
+    Mon: 1,
+    Tue: 2,
+    Wed: 3,
+    Thu: 4,
+    Fri: 5,
+    Sat: 6,
+  };
+
+  const day = dayMap[partMap.weekday] ?? 0;
+  const hours = parseInt(partMap.hour, 10) || 0;
+  const minutes = parseInt(partMap.minute, 10) || 0;
+
+  const timeFormatted = now.toLocaleTimeString('en-US', {
+    timeZone: 'Asia/Muscat',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
+
+  return { day, hours, minutes, timeFormatted };
+}
+
+/**
+ * Returns a synthetic Date representing Muscat local time for backwards-compatibility.
+ */
 export function getMuscatDate(): Date {
   const now = new Date();
-  const utc = now.getTime() + now.getTimezoneOffset() * 60000;
-  return new Date(utc + 3600000 * 4);
+  const dtf = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Muscat',
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hourCycle: 'h23',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+  });
+  const pMap: Record<string, string> = {};
+  for (const p of dtf.formatToParts(now)) {
+    pMap[p.type] = p.value;
+  }
+  return new Date(Date.UTC(
+    parseInt(pMap.year, 10),
+    parseInt(pMap.month, 10) - 1,
+    parseInt(pMap.day, 10),
+    parseInt(pMap.hour, 10),
+    parseInt(pMap.minute, 10),
+    parseInt(pMap.second, 10)
+  ));
 }
 
 export function getMuscatShowroomStatus(): MuscatShowroomStatus {
-  const muscatDate = getMuscatDate();
-  const day = muscatDate.getDay(); // 0 = Sun, 1 = Mon, ..., 5 = Fri, 6 = Sat
-  const hours = muscatDate.getHours();
-  const minutes = muscatDate.getMinutes();
+  const { day, hours, minutes, timeFormatted } = getMuscatTimeParts();
   const currentMins = hours * 60 + minutes;
 
   const isFriday = day === 5;
@@ -37,12 +108,6 @@ export function getMuscatShowroomStatus(): MuscatShowroomStatus {
   const morningEnd = 13 * 60; // 01:00 PM (780)
   const eveningStart = 16 * 60 + 30; // 04:30 PM (990)
   const eveningEnd = 22 * 60; // 10:00 PM (1320)
-
-  const timeFormatted = muscatDate.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  });
 
   // Check if currently open
   const isMorningOpen = !isFriday && currentMins >= morningStart && currentMins < morningEnd;
@@ -135,9 +200,7 @@ export function getSameDayDeliveryCountdown(): {
   formattedEn: string;
   formattedAr: string;
 } {
-  const muscatDate = getMuscatDate();
-  const hours = muscatDate.getHours();
-  const minutes = muscatDate.getMinutes();
+  const { hours, minutes } = getMuscatTimeParts();
   const currentMins = hours * 60 + minutes;
   const cutoffMins = 17 * 60; // 5:00 PM cutoff for same-day delivery
 

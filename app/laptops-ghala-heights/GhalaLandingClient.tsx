@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/components/LanguageContext';
 import { useSiteData } from '@/components/SiteDataContext';
@@ -24,13 +24,21 @@ import {
   Sparkles
 } from 'lucide-react';
 import { trackWhatsAppClick } from '@/lib/analytics';
-import { getMuscatShowroomStatus } from '@/lib/muscatTime';
+import { getMuscatShowroomStatus, MuscatShowroomStatus } from '@/lib/muscatTime';
 
 export default function GhalaLandingClient() {
   const { lang, dir } = useLanguage();
   const { products, theme } = useSiteData();
-  const showroomStatus = getMuscatShowroomStatus();
+  const [showroomStatus, setShowroomStatus] = useState<MuscatShowroomStatus | null>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+
+  useEffect(() => {
+    setShowroomStatus(getMuscatShowroomStatus());
+    const interval = setInterval(() => {
+      setShowroomStatus(getMuscatShowroomStatus());
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const primaryPhone = (theme?.contactNumbers?.primaryWhatsApp || '96894009501').replace(/[^0-9]/g, '');
 
