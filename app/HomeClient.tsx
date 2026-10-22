@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { trackWhatsAppClick, trackFilterChange } from '@/lib/analytics';
 import { useSiteData } from '@/components/SiteDataContext';
+import LaptopFinderQuiz from '@/components/LaptopFinderQuiz';
 
 export default function HomeClient() {
   const { t, lang, dir } = useLanguage();
@@ -332,6 +333,11 @@ export default function HomeClient() {
           </div>
 
         </div>
+      </section>
+
+      {/* 4.5 Interactive 4-Question Laptop Finder Wizard */}
+      <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+        <LaptopFinderQuiz />
       </section>
 
       {/* 5. Why Choose Us (Value & Peace of Mind) */}

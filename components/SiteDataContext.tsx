@@ -16,7 +16,7 @@ interface SiteDataContextType {
   saveBlog: (blog: BlogPost) => Promise<boolean>;
   deleteBlog: (id: string) => Promise<boolean>;
   saveTheme: (theme: ThemeSettings) => Promise<boolean>;
-  addInquiryLead: (lead: Omit<InquiryLead, 'id' | 'createdAt'>) => Promise<boolean>;
+  addInquiryLead: (lead: Omit<InquiryLead, 'id' | 'createdAt' | 'status'> & { status?: InquiryLead['status'] }) => Promise<boolean>;
   updateInquiryStatus: (id: string, status: InquiryLead['status'], notes?: string) => Promise<boolean>;
   deleteInquiryLead: (id: string) => Promise<boolean>;
   importStoreData: (data: StoreData) => Promise<boolean>;
@@ -274,12 +274,12 @@ export function SiteDataProvider({ children }: { children: React.ReactNode }) {
   };
 
   // 6. Inquiries
-  const addInquiryLead = async (lead: Omit<InquiryLead, 'id' | 'createdAt'>): Promise<boolean> => {
+  const addInquiryLead = async (lead: Omit<InquiryLead, 'id' | 'createdAt' | 'status'> & { status?: InquiryLead['status'] }): Promise<boolean> => {
     const newEntry: InquiryLead = {
       ...lead,
       id: `inq-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       createdAt: new Date().toISOString(),
-      status: 'new',
+      status: lead.status || 'new',
     };
 
     const nextInquiries = [newEntry, ...storeDataRef.current.inquiries];

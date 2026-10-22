@@ -93,6 +93,7 @@ export default function AdminProductsPage() {
       batteryHealth: '90% Health Verified',
       batteryPercentage: 90,
       priceNumeric: 140.000,
+      costPriceNumeric: 105.000,
       priceFormatted: 'OMR 140.000',
       wasPriceFormatted: 'OMR 165.000',
       warranty: '6 Months Shop Warranty + 7 Days Replacement',
@@ -293,11 +294,14 @@ export default function AdminProductsPage() {
 
                     <td className="py-3.5 px-4 font-mono">
                       <div className="font-bold text-white text-sm">{p.priceFormatted}</div>
-                      {p.wasPriceFormatted && (
-                        <div className="text-[11px] text-white/40 line-through">
-                          {p.wasPriceFormatted}
-                        </div>
-                      )}
+                      <div className="text-[10px] text-white/50 flex items-center gap-1 mt-0.5">
+                        <span>Cost:</span>
+                        <span>OMR {(p.costPriceNumeric || p.priceNumeric * 0.76).toFixed(3)}</span>
+                      </div>
+                      <div className="inline-flex items-center gap-1 text-[10px] font-bold text-lime bg-lime/10 px-1.5 py-0.5 rounded mt-1">
+                        <span>+OMR {(p.priceNumeric - (p.costPriceNumeric || p.priceNumeric * 0.76)).toFixed(3)}</span>
+                        <span>({(((p.priceNumeric - (p.costPriceNumeric || p.priceNumeric * 0.76)) / (p.priceNumeric || 1)) * 100).toFixed(0)}%)</span>
+                      </div>
                     </td>
 
                     <td className="py-3.5 px-4 text-center">
@@ -464,8 +468,8 @@ export default function AdminProductsPage() {
 
               {/* Section 2: Pricing & Battery */}
               <div>
-                <h3 className="text-sm font-bold text-orange mb-3">2. Pricing & Battery Health</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <h3 className="text-sm font-bold text-orange mb-3">2. Pricing, Cost & Battery Health</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                   <div>
                     <label className="block text-white/70 mb-1">Selling Price (OMR) *</label>
                     <input
@@ -484,8 +488,27 @@ export default function AdminProductsPage() {
                       className="w-full p-2.5 rounded-xl bg-white/5 border border-white/10 text-white font-mono"
                     />
                   </div>
+
                   <div>
-                    <label className="block text-white/70 mb-1">Original / Was Price (e.g. OMR 175.000)</label>
+                    <label className="block text-white/70 mb-1">Cost / Purchase (OMR)</label>
+                    <input
+                      type="number"
+                      step="0.001"
+                      value={editingProduct.costPriceNumeric ?? ''}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value) || 0;
+                        setEditingProduct({
+                          ...editingProduct,
+                          costPriceNumeric: val,
+                        });
+                      }}
+                      placeholder="e.g. 105.000"
+                      className="w-full p-2.5 rounded-xl bg-white/5 border border-white/10 text-white font-mono"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-white/70 mb-1">Was Price (e.g. OMR 175)</label>
                     <input
                       type="text"
                       value={editingProduct.wasPriceFormatted || ''}
@@ -496,8 +519,9 @@ export default function AdminProductsPage() {
                       className="w-full p-2.5 rounded-xl bg-white/5 border border-white/10 text-white font-mono"
                     />
                   </div>
+
                   <div>
-                    <label className="block text-white/70 mb-1">Battery Health % (85 - 100)</label>
+                    <label className="block text-white/70 mb-1">Battery Health % (70-100)</label>
                     <input
                       type="number"
                       min={70}
@@ -513,6 +537,25 @@ export default function AdminProductsPage() {
                       }}
                       className="w-full p-2.5 rounded-xl bg-white/5 border border-white/10 text-white font-mono"
                     />
+                  </div>
+                </div>
+
+                {/* Live Profit Margin Calculator Widget */}
+                <div className="mt-3 p-3.5 rounded-xl bg-white/5 border border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
+                  <div>
+                    <span className="text-white/60">Selling Price: </span>
+                    <span className="text-white font-bold">OMR {(editingProduct.priceNumeric || 0).toFixed(3)}</span>
+                  </div>
+                  <div>
+                    <span className="text-white/60">Estimated Cost: </span>
+                    <span className="text-cyan font-bold">OMR {(editingProduct.costPriceNumeric || (editingProduct.priceNumeric || 0) * 0.76).toFixed(3)}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-white/60">Gross Margin: </span>
+                    <span className="text-lime font-black bg-lime/10 px-2 py-0.5 rounded border border-lime/30">
+                      +OMR {((editingProduct.priceNumeric || 0) - (editingProduct.costPriceNumeric || (editingProduct.priceNumeric || 0) * 0.76)).toFixed(3)} (
+                      {((((editingProduct.priceNumeric || 0) - (editingProduct.costPriceNumeric || (editingProduct.priceNumeric || 0) * 0.76)) / (editingProduct.priceNumeric || 1)) * 100).toFixed(1)}%)
+                    </span>
                   </div>
                 </div>
               </div>

@@ -17,6 +17,7 @@ export interface Product {
   batteryHealth: string;
   batteryPercentage?: number;
   priceNumeric: number;
+  costPriceNumeric?: number;
   priceFormatted: string;
   wasPriceFormatted?: string;
   warranty: string;

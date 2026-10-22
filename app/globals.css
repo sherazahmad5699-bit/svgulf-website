@@ -64,3 +64,16 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* Print Optimization for 80mm POS Receipts & Corporate Quotations */
+@media print {
+  header, footer, nav, aside, .print\:hidden {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+}

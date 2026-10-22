@@ -135,6 +135,21 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/laptops-muscat" className="hover:text-cyan transition-colors font-medium">
+                  {lang === 'ar' ? 'لابتوبات مسقط (توصيل فوري)' : 'Laptops in Muscat (Same-Day)'}
+                </Link>
+              </li>
+              <li>
+                <Link href="/laptops-ghala-heights" className="hover:text-cyan transition-colors font-medium">
+                  {lang === 'ar' ? 'معرض غلا هايتس (محل 10)' : 'Ghala Heights Showroom'}
+                </Link>
+              </li>
+              <li>
+                <Link href="/laptops-salalah" className="hover:text-cyan transition-colors font-medium">
+                  {lang === 'ar' ? 'توصيل صلالة وظفار (COD)' : 'Salalah Delivery (COD)'}
+                </Link>
+              </li>
+              <li>
                 <Link href="/contact" className="hover:text-cyan transition-colors">
                   {t.navContact}
                 </Link>

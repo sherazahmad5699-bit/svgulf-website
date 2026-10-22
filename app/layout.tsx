@@ -153,6 +153,9 @@ const jsonLd = {
   ]
 };
 
+import { ComparisonProvider } from '@/components/ComparisonContext';
+import ComparisonDrawer from '@/components/ComparisonDrawer';
+
 export default function RootLayout({
   children,
 }: {
@@ -170,15 +173,18 @@ export default function RootLayout({
         <LanguageProvider>
           <ToastProvider>
             <SiteDataProvider>
-              <MotionProvider>
-                <Navbar />
-                <main className="flex-1">
-                  {children}
-                </main>
-                <WhatsAppFloater />
-                <CookieBanner />
-                <Footer />
-              </MotionProvider>
+              <ComparisonProvider>
+                <MotionProvider>
+                  <Navbar />
+                  <main className="flex-1">
+                    {children}
+                  </main>
+                  <ComparisonDrawer />
+                  <WhatsAppFloater />
+                  <CookieBanner />
+                  <Footer />
+                </MotionProvider>
+              </ComparisonProvider>
             </SiteDataProvider>
           </ToastProvider>
         </LanguageProvider>

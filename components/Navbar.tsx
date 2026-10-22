@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -23,12 +23,22 @@ import {
 } from 'lucide-react';
 import { trackWhatsAppClick, trackPhoneCall } from '@/lib/analytics';
 import { useSiteData } from './SiteDataContext';
+import { getMuscatShowroomStatus, MuscatShowroomStatus } from '@/lib/muscatTime';
 
 export default function Navbar() {
   const { lang, toggleLang, t, dir } = useLanguage();
   const { theme } = useSiteData();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showroomStatus, setShowroomStatus] = useState<MuscatShowroomStatus | null>(null);
+
+  useEffect(() => {
+    setShowroomStatus(getMuscatShowroomStatus());
+    const interval = setInterval(() => {
+      setShowroomStatus(getMuscatShowroomStatus());
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   if (pathname?.startsWith('/admin')) {
     return null;
@@ -87,10 +97,21 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center gap-4 ml-auto">
-            <span className="hidden lg:flex items-center gap-1 text-white/70">
-              <Clock className="w-3 h-3 text-cyan" />
-              <span>{t.topHours}</span>
-            </span>
+            {showroomStatus && (
+              <Link 
+                href="/showroom" 
+                className="flex items-center gap-1.5 text-xs font-bold hover:underline"
+                title={lang === 'ar' ? showroomStatus.subTextAr : showroomStatus.subTextEn}
+              >
+                <span className={`w-2 h-2 rounded-full ${showroomStatus.isOpen ? 'bg-lime animate-pulse' : 'bg-amber-400'}`} />
+                <span className={showroomStatus.isOpen ? 'text-lime' : 'text-amber-300'}>
+                  {lang === 'ar' ? showroomStatus.statusTextAr : showroomStatus.statusTextEn}
+                </span>
+                <span className="hidden xl:inline text-white/60 text-[11px]">
+                  ({lang === 'ar' ? showroomStatus.subTextAr : showroomStatus.subTextEn})
+                </span>
+              </Link>
+            )}
             <a 
               href={`https://wa.me/${primaryPhoneClean}?text=Hello%20Smart%20Vision%20Gulf,%20I%20have%20an%20inquiry`} 
               target="_blank" 
