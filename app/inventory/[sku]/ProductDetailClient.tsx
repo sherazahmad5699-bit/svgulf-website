@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -65,6 +66,7 @@ export default function ProductDetailClient({ initialProduct, sku }: ProductDeta
   const [isShowroomModalOpen, setIsShowroomModalOpen] = useState(false);
   const [showCertChecklist, setShowCertChecklist] = useState(false);
   const [deliveryCountdown, setDeliveryCountdown] = useState<ReturnType<typeof getSameDayDeliveryCountdown> | null>(null);
+  const [activeImage, setActiveImage] = useState<string>('');
 
   useEffect(() => {
     setDeliveryCountdown(getSameDayDeliveryCountdown());
@@ -76,6 +78,14 @@ export default function ProductDetailClient({ initialProduct, sku }: ProductDeta
 
   // Resolve live dynamic product or server initialProduct
   const product = products.find((p) => p.sku === sku) || initialProduct;
+
+  useEffect(() => {
+    if (product?.images && product.images.length > 0) {
+      setActiveImage(product.images[0]);
+    } else if (product?.image) {
+      setActiveImage(product.image);
+    }
+  }, [product]);
 
   if (!product) {
     return (
@@ -264,31 +274,84 @@ export default function ProductDetailClient({ initialProduct, sku }: ProductDeta
               />
 
               {/* Status Header */}
-              <div className="relative z-10 flex items-center justify-between mb-8">
+              <div className="relative z-10 flex items-center justify-between mb-6">
                 <span className="text-xs font-mono font-bold text-cyan bg-cyan/15 px-3 py-1.5 rounded-xl border border-cyan/30 uppercase">
                   {product.brandLabel} · {lang === 'ar' ? product.categoryLabelAr : product.categoryLabel}
                 </span>
-                <span className="text-xs font-bold text-lime flex items-center gap-1.5 bg-lime/10 px-3 py-1.5 rounded-xl border border-lime/30">
-                  <span className="w-2 h-2 rounded-full bg-lime animate-ping" />
-                  {lang === 'ar' ? 'متوفر بمخزن مسقط' : 'In Stock Muscat'}
+                <span className={`text-xs font-bold flex items-center gap-1.5 px-3 py-1.5 rounded-xl border ${
+                  product.inStock === false
+                    ? 'text-rose-400 bg-rose-950/40 border-rose-500/30'
+                    : 'text-lime bg-lime/10 border-lime/30'
+                }`}>
+                  <span className={`w-2 h-2 rounded-full ${product.inStock === false ? 'bg-rose-500' : 'bg-lime animate-ping'}`} />
+                  {product.inStock === false
+                    ? (lang === 'ar' ? 'غير متوفر حالياً' : 'Out of Stock')
+                    : (lang === 'ar' ? 'متوفر بمخزن مسقط' : 'In Stock Muscat')}
                 </span>
               </div>
 
-              {/* Hardware Device Graphic Mockup */}
-              <div className="relative z-10 py-8 flex flex-col items-center justify-center text-center">
-                <div className="w-32 h-32 rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 flex flex-col items-center justify-center mb-4 shadow-glow-cyan p-4">
-                  {isAccessory ? (
-                    <Monitor className="w-16 h-16 text-cyan-light" />
-                  ) : (
-                    <Laptop className="w-16 h-16 text-cyan-light" />
+              {/* Hardware Device Graphic Mockup or Real Photo Gallery */}
+              {(product.images && product.images.length > 0) || (product.image && !product.image.endsWith('.png')) ? (
+                <div className="relative z-10 py-1 flex flex-col items-center">
+                  <div className="relative w-full h-72 sm:h-80 rounded-2xl bg-white/5 backdrop-blur-md border border-white/20 flex items-center justify-center p-3 mb-3 shadow-glow-cyan overflow-hidden group">
+                    <img
+                      src={activeImage || (product.images ? product.images[0] : product.image)}
+                      alt={lang === 'ar' ? product.nameAr : product.name}
+                      className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105"
+                    />
+                    <div className="absolute bottom-2 right-2 px-2.5 py-1 rounded-lg bg-black/75 backdrop-blur-md text-[10px] font-mono text-cyan-light border border-white/10 flex items-center gap-1.5">
+                      <Sparkles className="w-3 h-3 text-cyan" />
+                      <span>{lang === 'ar' ? 'تصوير حقيقي للجهاز' : 'Actual Device Photos'}</span>
+                    </div>
+                  </div>
+
+                  {/* Thumbnail Row */}
+                  {product.images && product.images.length > 1 && (
+                    <div className="w-full flex items-center justify-center gap-2 overflow-x-auto pb-2 mb-3">
+                      {product.images.map((imgUrl, i) => {
+                        const currentShown = activeImage || product.images![0];
+                        const isSelected = (currentShown === imgUrl);
+                        return (
+                          <button
+                            key={i}
+                            type="button"
+                            onClick={() => setActiveImage(imgUrl)}
+                            className={`relative w-14 h-14 rounded-xl overflow-hidden border-2 transition-all p-1 bg-white/10 shrink-0 ${
+                              isSelected
+                                ? 'border-cyan shadow-glow-cyan scale-105 bg-white/20'
+                                : 'border-white/20 opacity-60 hover:opacity-100 hover:border-white/50'
+                            }`}
+                          >
+                            <img
+                              src={imgUrl}
+                              alt={`Photo ${i + 1}`}
+                              className="w-full h-full object-contain"
+                            />
+                          </button>
+                        );
+                      })}
+                    </div>
                   )}
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-slate-300 font-bold mt-1">
-                    {product.brandLabel}
-                  </span>
+
+                  <h3 className="text-xl font-black text-white text-center">{lang === 'ar' ? product.nameAr : product.name}</h3>
+                  <span className="text-xs font-mono text-cyan-light mt-0.5">SKU: {product.sku}</span>
                 </div>
-                <h3 className="text-xl font-black text-white">{lang === 'ar' ? product.nameAr : product.name}</h3>
-                <span className="text-xs font-mono text-cyan-light mt-1">SKU: {product.sku}</span>
-              </div>
+              ) : (
+                <div className="relative z-10 py-8 flex flex-col items-center justify-center text-center">
+                  <div className="w-32 h-32 rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 flex flex-col items-center justify-center mb-4 shadow-glow-cyan p-4">
+                    {isAccessory ? (
+                      <Monitor className="w-16 h-16 text-cyan-light" />
+                    ) : (
+                      <Laptop className="w-16 h-16 text-cyan-light" />
+                    )}
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-slate-300 font-bold mt-1">
+                      {product.brandLabel}
+                    </span>
+                  </div>
+                  <h3 className="text-xl font-black text-white">{lang === 'ar' ? product.nameAr : product.name}</h3>
+                  <span className="text-xs font-mono text-cyan-light mt-1">SKU: {product.sku}</span>
+                </div>
+              )}
 
               {/* Quick Trust Ribbons */}
               <div className="relative z-10 grid grid-cols-2 gap-2 pt-6 border-t border-white/10 text-xs text-slate-300 font-medium">
@@ -698,10 +761,14 @@ export default function ProductDetailClient({ initialProduct, sku }: ProductDeta
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => trackWhatsAppClick('product_detail_configurator', product.sku, product.name)}
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-lime hover:bg-lime-hover text-white font-extrabold text-base shadow-glow-lime transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                    className={`w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl font-extrabold text-base transition-all transform hover:-translate-y-0.5 active:translate-y-0 ${
+                      product.inStock === false
+                        ? 'bg-slate-900 hover:bg-black text-cyan-light border border-cyan/40 shadow-card-hover'
+                        : 'bg-lime hover:bg-lime-hover text-white shadow-glow-lime'
+                    }`}
                   >
                     <MessageCircle className="w-5 h-5 fill-current" />
-                    <span>{t.detailsOrderDirect}</span>
+                    <span>{product.inStock === false ? (lang === 'ar' ? 'طلب مسبق وحجز الدفعة' : 'Inquire / Reserve Next Batch') : t.detailsOrderDirect}</span>
                   </a>
                 </div>
               </div>
@@ -748,10 +815,14 @@ export default function ProductDetailClient({ initialProduct, sku }: ProductDeta
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => trackWhatsAppClick('product_detail_direct', product.sku, product.name)}
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-lime hover:bg-lime-hover text-white font-extrabold text-base shadow-glow-lime transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                    className={`w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl font-extrabold text-base transition-all transform hover:-translate-y-0.5 active:translate-y-0 ${
+                      product.inStock === false
+                        ? 'bg-slate-900 hover:bg-black text-cyan-light border border-cyan/40 shadow-card-hover'
+                        : 'bg-lime hover:bg-lime-hover text-white shadow-glow-lime'
+                    }`}
                   >
                     <MessageCircle className="w-5 h-5 fill-current" />
-                    <span>{t.detailsOrderDirect}</span>
+                    <span>{product.inStock === false ? (lang === 'ar' ? 'طلب مسبق وحجز الدفعة' : 'Inquire / Reserve Next Batch') : t.detailsOrderDirect}</span>
                   </a>
                 </div>
               </div>
@@ -803,9 +874,9 @@ export default function ProductDetailClient({ initialProduct, sku }: ProductDeta
           <div className="text-lg font-black text-navy font-mono">
             {formattedTotalPrice}
           </div>
-          <div className="text-[9px] text-lime-dark font-bold flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-lime animate-ping" />
-            <span>{lang === 'ar' ? 'متوفر بمسقط' : 'In Stock'}</span>
+          <div className={`text-[9px] font-bold flex items-center gap-1 ${product.inStock === false ? 'text-rose-600' : 'text-lime-dark'}`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${product.inStock === false ? 'bg-rose-500' : 'bg-lime animate-ping'}`} />
+            <span>{product.inStock === false ? (lang === 'ar' ? 'غير متوفر حالياً' : 'Out of Stock') : (lang === 'ar' ? 'متوفر بمسقط' : 'In Stock')}</span>
           </div>
         </div>
 
@@ -814,10 +885,14 @@ export default function ProductDetailClient({ initialProduct, sku }: ProductDeta
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => trackWhatsAppClick('mobile_sticky_action_bar', product.sku, product.name)}
-          className="flex-1 max-w-[220px] inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-lime hover:bg-lime-hover text-white font-extrabold text-xs shadow-md transition-all"
+          className={`flex-1 max-w-[220px] inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-extrabold text-xs shadow-md transition-all ${
+            product.inStock === false
+              ? 'bg-slate-900 hover:bg-black text-cyan-light border border-cyan/30'
+              : 'bg-lime hover:bg-lime-hover text-white'
+          }`}
         >
           <MessageCircle className="w-4 h-4 fill-current shrink-0" />
-          <span>{lang === 'ar' ? 'طلب فوري (30 ثانية)' : '30-Sec WhatsApp Order'}</span>
+          <span>{product.inStock === false ? (lang === 'ar' ? 'حجز الدفعة القادمة' : 'Inquire Next Batch') : (lang === 'ar' ? 'طلب فوري (30 ثانية)' : '30-Sec WhatsApp Order')}</span>
         </a>
       </div>
 

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import React from 'react';
@@ -120,6 +121,28 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
       </div>
 
+      {/* Product Image Preview if available */}
+      {product.image && (
+        <Link 
+          href={`/inventory/${product.sku}`} 
+          className="relative h-48 bg-slate-50/70 flex items-center justify-center p-3 overflow-hidden border-b border-slate-100 group-hover:bg-slate-100/50 transition-colors"
+        >
+          <img 
+            src={product.image} 
+            alt={lang === 'ar' ? product.nameAr : product.name} 
+            className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105"
+            loading="lazy"
+          />
+          {product.inStock === false && (
+            <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-[2px] flex items-center justify-center">
+              <span className="bg-rose-600 text-white font-extrabold text-xs px-3 py-1.5 rounded-xl uppercase tracking-wider shadow-lg">
+                {lang === 'ar' ? 'غير متوفر حالياً' : 'Out of Stock'}
+              </span>
+            </div>
+          )}
+        </Link>
+      )}
+
       {/* Body: Title & Model */}
       <div className="p-5 flex-1 flex flex-col">
         
@@ -212,16 +235,29 @@ export default function ProductCard({ product }: ProductCardProps) {
             <ExternalLink className="w-3 h-3 text-cyan" />
           </Link>
 
-          <a
-            href={waLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => trackWhatsAppClick('product_card', product.sku, product.name)}
-            className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-lime hover:bg-lime-hover text-white font-extrabold text-xs shadow-sm hover:shadow-glow-lime transition-all transform hover:-translate-y-0.5"
-          >
-            <MessageCircle className="w-3.5 h-3.5 fill-current" />
-            <span>{t.orderWhatsApp}</span>
-          </a>
+          {product.inStock === false ? (
+            <a
+              href={waLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackWhatsAppClick('product_card_restock_inquiry', product.sku, product.name)}
+              className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-900 text-cyan-light font-extrabold text-xs shadow-sm transition-all transform hover:-translate-y-0.5"
+            >
+              <MessageCircle className="w-3.5 h-3.5 fill-current text-cyan" />
+              <span>{lang === 'ar' ? 'حجز الدفعة' : 'Inquire Restock'}</span>
+            </a>
+          ) : (
+            <a
+              href={waLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackWhatsAppClick('product_card', product.sku, product.name)}
+              className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-lime hover:bg-lime-hover text-white font-extrabold text-xs shadow-sm hover:shadow-glow-lime transition-all transform hover:-translate-y-0.5"
+            >
+              <MessageCircle className="w-3.5 h-3.5 fill-current" />
+              <span>{t.orderWhatsApp}</span>
+            </a>
+          )}
         </div>
       </div>
     </div>

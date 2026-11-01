@@ -28,6 +28,7 @@ export interface Product {
   featured?: boolean;
   bestSeller?: boolean;
   image: string;
+  images?: string[];
   description: string;
   descriptionAr: string;
   fullSpecs: {
@@ -43,6 +44,72 @@ export interface Product {
 }
 
 export const PRODUCTS: Product[] = [
+  {
+    sku: 'SVG-DL5410-R',
+    brand: 'dell',
+    brandLabel: 'Dell',
+    name: 'Dell Latitude 5410 Business Laptop',
+    nameAr: 'لابتوب ديل لاتيتيود 5410 للأعمال',
+    category: 'laptop',
+    categoryLabel: 'Business Laptop',
+    categoryLabelAr: 'لابتوب أعمال',
+    cpu: 'Intel Core i5-10210U (10th Gen, 4 Cores, up to 4.20 GHz)',
+    ram: '8GB DDR4 High-Speed',
+    ssd: '256GB PCIe NVMe SSD',
+    display: '14.0" Full HD (1920x1080) Anti-Glare IPS 220 nits',
+    graphics: 'Intel UHD Graphics 620',
+    condition: 'Grade A++',
+    conditionAr: 'درجة أولى ممتازة (A++)',
+    batteryHealth: '88% Health Verified',
+    batteryPercentage: 88,
+    priceNumeric: 85.000,
+    costPriceNumeric: 65.000,
+    priceFormatted: 'OMR 85.000',
+    wasPriceFormatted: 'OMR 110.000',
+    warranty: '6 Months Shop Warranty + 7 Days Replacement',
+    warrantyAr: 'ضمان المحل 6 أشهر + استبدال 7 أيام',
+    keyboard: 'Factory Backlit Keyboard (Arabic / English)',
+    bundle: 'Free Heavy-Duty Bag + Wireless Mouse + Original 65W UK Charger',
+    bundleAr: 'حقيبة فاخرة + ماوس لاسلكي + شاحن ديل أصلي مجاناً',
+    featured: false,
+    bestSeller: false,
+    inStock: false,
+    image: '/products/dell-latitude-5410/dell-5410-cover.webp',
+    images: [
+      '/products/dell-latitude-5410/dell-5410-1.webp',
+      '/products/dell-latitude-5410/dell-5410-2.webp',
+      '/products/dell-latitude-5410/dell-5410-3.webp',
+      '/products/dell-latitude-5410/dell-5410-4.webp',
+      '/products/dell-latitude-5410/dell-5410-5.webp',
+      '/products/dell-latitude-5410/dell-5410-6.webp'
+    ],
+    description: 'Budget-friendly corporate reliability in Oman. Powered by 10th Gen Intel Core i5 with 8GB RAM, responsive 256GB NVMe SSD, all-day verified battery life, and rigid MIL-SPEC chassis. Ideal for daily office work, SME accounting, and university coursework in Muscat.',
+    descriptionAr: 'المتانة والاعتمادية بأفضل قيمة اقتصادية في سلطنة عُمان. معالج إنتل الجيل العاشر Core i5 مع ذاكرة 8 جيجابايت وهارد سريع 256GB NVMe SSD، بطارية مفحوصة بكفاءة 88%، وهيكل قوي لاجتياز المهام اليومية للشركات والطلاب.',
+    fullSpecs: [
+      { label: 'Processor', labelAr: 'المعالج', value: 'Intel Core i5-10210U (4 Cores, 8 Threads, up to 4.20 GHz, 6MB Cache)' },
+      { label: 'Installed Memory', labelAr: 'الذاكرة العشوائية', value: '8 GB DDR4 2666MHz (Upgradeable to 32GB)' },
+      { label: 'Internal Storage', labelAr: 'سعة التخزين', value: '256 GB M.2 NVMe PCIe 3.0 SSD' },
+      { label: 'Display Panel', labelAr: 'الشاشة والعرض', value: '14.0" FHD (1920x1080) WVA Anti-Glare 220 nits' },
+      { label: 'Graphics Controller', labelAr: 'كرت الشاشة', value: 'Intel UHD Graphics with shared system memory' },
+      { label: 'Battery Health', labelAr: 'صحة وكفاءة البطارية', value: '88% Verified OEM Health (4-Cell 68Whr ExpressCharge)' },
+      { label: 'Keyboard Layout', labelAr: 'لوحة المفاتيح', value: 'Dual-Language Backlit (Arabic / English Laser Engraved)' },
+      { label: 'Ports & Expansion', labelAr: 'المنافذ والتوصيل', value: '1x USB-C 3.2 Gen 2, 3x USB-A 3.2 Gen 1, 1x HDMI 1.4b, 1x RJ-45 Gigabit LAN, 1x MicroSD Reader, Audio Jack' },
+      { label: 'Wireless Networking', labelAr: 'الشبكات والاتصال', value: 'Intel Dual Band Wi-Fi 6 AX201 + Bluetooth 5.1' },
+      { label: 'Operating System', labelAr: 'نظام التشغيل', value: 'Windows 11 Pro 64-bit Genuine Licensed' }
+    ],
+    upgradeOptions: {
+      ramOptions: [
+        { label: '8GB DDR4 Standard Included', labelAr: '8 جيجابايت DDR4 الأساسي المعتمد', price: 0 },
+        { label: 'Upgrade to 16GB High-Speed (+OMR 12.000)', labelAr: 'ترقية إلى 16 جيجابايت سرعة عالية (+12.000 ر.ع)', price: 12 },
+        { label: 'Upgrade to 32GB Dual-Channel (+OMR 25.000)', labelAr: 'ترقية إلى 32 جيجابايت قناة مزدوجة (+25.000 ر.ع)', price: 25 }
+      ],
+      ssdOptions: [
+        { label: '256GB NVMe Standard Included', labelAr: '256 جيجابايت NVMe الأساسي المعتمد', price: 0 },
+        { label: 'Upgrade to 512GB Ultra NVMe (+OMR 10.000)', labelAr: 'ترقية إلى 512 جيجابايت فائق السرعة (+10.000 ر.ع)', price: 10 },
+        { label: 'Upgrade to 1TB Pro NVMe (+OMR 22.000)', labelAr: 'ترقية إلى 1 تيرابايت للمحترفين (+22.000 ر.ع)', price: 22 }
+      ]
+    }
+  },
   {
     sku: 'SVG-DL5440-R',
     brand: 'dell',
