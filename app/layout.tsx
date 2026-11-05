@@ -92,6 +92,9 @@ export const metadata: Metadata = {
     ],
   },
   manifest: '/site.webmanifest',
+  verification: {
+    google: 'jAmiNgB6QV2lnaCgkFDlvgofY4JAYL_lcX5hqOfhqQU',
+  },
 };
 
 const jsonLd = {
